@@ -82,6 +82,24 @@ def test_sector_residual_accepts_nullable_eligible():
     assert abs(resid.loc[dates[0], 1] - 0.7) < 1e-6
 
 
+def test_ewma_smooth_identity_and_smoothing():
+    dates = pd.date_range("2020-01-01", periods=10, freq="D")
+    sig = pd.DataFrame({"a": [1.0, -1.0] * 5}, index=dates)  # alternating -> high churn
+    assert engine.ewma_smooth(sig, None).equals(sig)         # no smoothing -> identity
+    sm = engine.ewma_smooth(sig, halflife=3)
+    assert sm["a"].diff().abs().mean() < sig["a"].diff().abs().mean()  # smoother
+
+
+def test_apply_holding_period_holds_between_rebalances():
+    import numpy as np
+
+    dates = pd.date_range("2020-01-01", periods=6, freq="D")
+    w = pd.DataFrame({"a": np.arange(6, dtype=float)}, index=dates)  # 0,1,2,3,4,5
+    held = engine.apply_holding_period(w, k=3)
+    # rebalance on rows 0 and 3; rows 1-2 hold 0, rows 4-5 hold 3
+    assert list(held["a"]) == [0, 0, 0, 3, 3, 3]
+
+
 def test_signal_to_weights_respects_eligible():
     dates = pd.date_range("2020-01-01", periods=4, freq="D")
     sig = pd.DataFrame({"A": [1.0] * 4, "B": [-1.0] * 4, "C": [2.0] * 4}, index=dates)

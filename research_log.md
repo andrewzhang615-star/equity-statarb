@@ -165,6 +165,32 @@ cost-sensitivity + capacity analysis.
 
 ---
 
+## 2026-06-27 - Turnover reduction: strategy crosses to net-positive (IS 2000-2018)
+
+Sweep on the sector-residual signal (7 bps assumed):
+
+| config        | turnover | gross Sh | net Sh | breakeven |
+|---------------|----------|----------|--------|-----------|
+| base (daily)  | 0.635    | 1.22     | -0.33  | 5.5 bps   |
+| EWMA hl=2     | 0.325    | 1.10     | +0.28  | 9.4 bps   |
+| EWMA hl=3     | 0.279    | 1.02     | +0.33  | 10.3 bps  |
+| EWMA hl=5     | 0.228    | 0.90     | +0.34  | 11.3 bps  |
+| EWMA hl=10    | 0.173    | 0.74     | +0.33  | 12.5 bps  |
+| hold k=5      | 0.292    | 1.05     | +0.28  | 9.5 bps   |
+
+EWMA smoothing ~halves turnover for a modest gross give-up, pushing breakeven past 7 bps and flipping net
+Sharpe -0.33 -> ~+0.34. Net is flat across hl 3-10 (plateau, not a knife-edge -> not obviously overfit).
+Smoothing beats fixed-grid holding at equal turnover (hl=3 net 0.33 vs hold k=3 net 0.03): gradual vs lumpy.
+
+Full arc: raw (4.4 bps, -0.39) -> +residualization (5.5, -0.33) -> +EWMA smoothing (~11, **+0.34**).
+Short-horizon reversal survives realistic costs only once residualized AND traded slowly.
+
+CAVEATS (do not over-claim): IS-only; halflife is a TUNED knob (best of sweep); net ~0.34 is modest. Plan:
+(1) lock hl=5, (2) cost-sensitivity + capacity, (3) confirm on sealed 2019-2024 holdout ONCE,
+(4) deflated Sharpe over the trial count. Do not trust the IS number until OOS + deflation survive it.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
@@ -172,3 +198,4 @@ cost-sensitivity + capacity analysis.
 | 2026-06-27 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
 | 2026-06-27 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
 | 2026-06-27 | sector-residual 5d reversal (LOO) | 2-digit SIC, eligible peers ≥5, point-in-time | 1.22 gross / -0.33 net | sealed | **breakeven 5.5bps**; gross maxDD -8.2%; turnover pinned 0.64 |
+| 2026-06-27 | sector-resid + EWMA smooth hl=5 | turnover control | 0.90 gross / **+0.34 net** | sealed | **breakeven 11.3bps**; turnover 0.64→0.23; FIRST net-positive (IS, tuned) |

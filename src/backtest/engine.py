@@ -66,3 +66,34 @@ def run_backtest(
     return pd.DataFrame(
         {"gross": gross_ret, "cost": cost, "net": net_ret, "turnover": turn}
     )
+
+
+# --------------------------------------------------------------------------- #
+# Turnover-reduction levers (vectorized)
+# --------------------------------------------------------------------------- #
+def ewma_smooth(signal: pd.DataFrame, halflife: float | None) -> pd.DataFrame:
+    """EWMA-smooth a signal across time so positions are stickier (less churn).
+
+    `halflife` is in trading days; None/<=0 returns the signal unchanged.
+    """
+    if not halflife or halflife <= 0:
+        return signal
+    return signal.ewm(halflife=halflife, min_periods=1).mean()
+
+
+def apply_holding_period(weights: pd.DataFrame, k: int) -> pd.DataFrame:
+    """Rebalance only every `k` days; hold weights between rebalances.
+
+    Trades on a coarser grid to cut turnover. k<=1 returns weights unchanged.
+
+    Caveat (exploration helper): holds a position until the next rebalance even if
+    the target went to zero (e.g. a name delists / leaves the universe mid-period).
+    The committed candidate uses EWMA smoothing, not this; if a holding-period
+    strategy is ever used seriously, force exits on delist/ineligible days.
+    """
+    if k <= 1:
+        return weights
+    held = weights.copy()
+    non_rebalance = np.where((np.arange(len(held)) % k) != 0)[0]
+    held.iloc[non_rebalance] = np.nan      # blank the off-grid days...
+    return held.ffill().fillna(0.0)        # ...and carry the last rebalance forward
