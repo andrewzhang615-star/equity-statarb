@@ -38,6 +38,10 @@ def signal_to_weights(
     w = s.div(gross.replace(0.0, np.nan), axis=0) * gross_leverage
     if max_weight is not None:
         w = w.clip(-max_weight, max_weight)
+        if market_neutral:
+            # Clipping can re-introduce a small net exposure; restore dollar-
+            # neutrality. The resulting cap overage from re-demeaning is negligible.
+            w = w.sub(w.mean(axis=1), axis=0)
     return w.fillna(0.0)
 
 

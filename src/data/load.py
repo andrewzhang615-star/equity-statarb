@@ -158,8 +158,9 @@ def build_eligibility(daily: pd.DataFrame, dcfg: dict) -> pd.DataFrame:
 
     # Never let a signal try to trade a name on the day it delists.
     if "delist_event" in daily.columns:
+        flag = daily.assign(_de=daily["delist_event"].astype("int8"))
         de = (
-            daily.pivot_table(index="date", columns="permno", values="delist_event", aggfunc="max")
+            flag.pivot_table(index="date", columns="permno", values="_de", aggfunc="max")
             .reindex(index=eligible.index, columns=eligible.columns)
             .fillna(0)
             .astype(bool)

@@ -127,8 +127,25 @@ clear breakeven? Plus a lower-turnover variant (longer lookback / holding / sign
 
 ---
 
+## 2026-06-27 - Market-residual reversal vs raw (IS 2000-2018)
+
+Market residualization (`resid = ret - rolling-beta * mkt`, mkt = EW mean of the **eligible/tradable**
+universe) lifted **gross** Sharpe 0.67 -> 1.00: vol fell 10.5% -> 8.0% AND gross ann return rose
+6.7% -> 8.0%. Because the **mean edge** rose (not just vol), **breakeven improved 4.4 -> 5.1 bps/turn**.
+Net is still negative at 7 bps (-0.39), so it does not yet survive realistic costs -- but the gap narrowed.
+
+Note: an earlier run used a full-CRSP (microcap-tilted) market proxy and showed gross 0.89 / breakeven
+4.6 with the edge ~flat. Switching to the *eligible-universe* proxy (the universe we actually trade) both
+fixed a text/code mismatch and gave a cleaner residual -> bigger edge. Lesson stands that **breakeven
+(= mean gross / turnover) is the cost-relevant metric, not vol/Sharpe**; remaining levers are sector
+neutralization (mean edge) and turnover reduction (no-trade bands, smoothing, longer holding).
+(Net maxDD ~-70% is just the bleed of a net-losing strategy, not a real risk stat.)
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
 |------|------------------|--------|-----------|------------|-------|
 | 2026-06-27 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
+| 2026-06-27 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
