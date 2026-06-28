@@ -1,0 +1,22 @@
+# Data (pulled locally, not committed)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+*.parquet
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# Reports
+reports/figures/*
+!reports/figures/.gitkeep
+
+# OS
+.DS_Store

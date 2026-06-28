@@ -1,0 +1,65 @@
+# Single source of truth for the project. Every script/notebook reads from here.
+seed: 42
+
+data:
+  start_date: "2000-01-01"
+  end_date: "2024-12-31"
+  share_codes: [10, 11]        # CRSP common shares only
+  exchange_codes: [1, 2, 3]    # NYSE, AMEX, NASDAQ
+  min_price: 5.0               # drop sub-$5 names (point-in-time, no look-ahead)
+  universe_size: 1000          # top-N by trailing dollar volume, rebalanced daily
+  adv_window: 60               # window (days) for the average-dollar-volume liquidity rank
+  adv_min_periods: 20
+  raw_path: "data/raw/crsp_daily.parquet"            # raw dsf + dsenames (no imputation/masking)
+  delist_path: "data/raw/crsp_delist.parquet"        # raw dsedelist: dlret, dlstcd, dlstdt
+  returns_full_path: "data/processed/returns_full.parquet"  # PnL panel — NEVER masked
+  eligible_path: "data/processed/eligible.parquet"          # tradability mask — weights only
+
+delisting:
+  # Imputation for MISSING delisting returns, applied at panel-build time
+  # (the raw pull stays raw). Avoids the "loser silently disappears" bias.
+  missing_perf_dlret: -0.30                     # default for missing *performance* delistings (Shumway 1997)
+  perf_code_ranges: [[500, 500], [520, 584]]    # CRSP dlstcd treated as performance delistings
+  sensitivity: [0.0, -0.30, -0.55]              # main robustness table for the imputation value
+  bankruptcy_stress:                            # optional harsh case, NOT part of the routine table
+    enabled: false
+    value: -1.00
+    codes: [574]                                # 574 = declared insolvent / bankruptcy
+
+residual:
+  method: "market"             # MVP: "market"; stretch: "pca" or "sector_etf"
+  n_factors: 1                 # MVP market residual; increase only for PCA stretch
+  estimation_window: 60        # trading days for residual estimation
+  ou_min_halflife: 1           # days
+  ou_max_halflife: 30          # stretch: only trade names that revert fast enough
+
+signals:
+  reversal:
+    lookback: 5                # days
+    skip: 0
+  momentum:
+    lookback: 252              # ~12 months
+    skip: 21                   # stretch goal; skip recent month
+  s_score:
+    entry: 1.25                # stretch: open when |s| > entry
+    exit: 0.50                 # stretch: close when |s| < exit
+
+portfolio:
+  gross_leverage: 1.0
+  max_weight: 0.02             # per-name cap
+  market_neutral: true         # cross-sectionally demean -> dollar neutral
+  combine_weights:             # MVP: residual reversal only; momentum is stretch
+    residual_reversal: 1.0
+    momentum: 0.0
+
+costs:
+  commission_bps: 2.0          # per side
+  slippage_bps: 5.0            # baseline; impact model can override
+
+backtest:
+  rebalance: "daily"
+  capital: 10_000_000
+
+# Out-of-sample protocol: reserve the final segment as a true holdout.
+evaluation:
+  oos_start: "2019-01-01"      # 2000-2018 in-sample/research, 2019-2024 holdout
