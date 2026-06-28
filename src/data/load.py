@@ -234,5 +234,21 @@ def load_sector(config: dict | None = None) -> pd.DataFrame:
     return pd.read_parquet(path) if path.exists() else build_sector_panel(config)
 
 
+def advdollar_panel(config: dict | None = None) -> pd.DataFrame:
+    """Trailing average-dollar-volume panel (dates x permno), lagged one day.
+
+    ADV$ = 60-day mean of |prc|*vol, then .shift(1) so a day's trade is sized
+    against volume known by the prior close (no look-ahead). Computed in-memory
+    (not cached) since it is only needed by the capacity analysis.
+    """
+    cfg = config or CONFIG
+    dcfg = cfg["data"]
+    daily = pd.read_parquet(ROOT / dcfg["raw_path"], columns=["permno", "date", "prc", "vol"])
+    _check_unique_permno_date(daily)
+    daily["dvol"] = daily["prc"].abs() * daily["vol"]
+    dv = daily.pivot(index="date", columns="permno", values="dvol")
+    return dv.rolling(dcfg["adv_window"], min_periods=dcfg["adv_min_periods"]).mean().shift(1)
+
+
 if __name__ == "__main__":
     build_panel()

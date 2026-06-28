@@ -1,39 +1,47 @@
-"""Market impact & capacity.
+"""Market impact & capacity (square-root law).
 
-MVP: build a simple capacity curve using turnover, average daily dollar volume,
-and a conservative linear/slippage cost assumption. This is enough to answer:
-"how much deployed capital can the signal plausibly absorb before net Sharpe
-collapses?"
+Per-name impact of trading ``trade$ = |dw|*AUM`` dollars in name i, in return units:
 
-Stretch: refine the model with an Almgren-Chriss-inspired impact framework.
+    impact_i = eta * sigma_i * sqrt(trade$_i / ADV$_i)
 
-Square-root impact (per trade, in return terms):
-    cost ~= spread/2  +  eta * sigma * sqrt(Q / ADV)
-where Q is shares traded, ADV is average daily volume, sigma is daily vol, and
-eta is an impact coefficient calibrated from the literature (~0.1-1).
+Portfolio impact cost per day = ``sum_i |dw_i| * impact_i``. Substituting trade$ and
+factoring AUM/eta out makes the (AUM, eta) sweep cheap:
 
-capacity_curve: re-run the strategy at increasing AUM and plot net Sharpe vs.
-capital to find where impact erodes the edge -- the project's HFT-flavored
-contribution.
+    cost_t(AUM, eta) = eta * sqrt(AUM) * base_t,
+    base_t = sum_i |dw_i| * sigma_i * sqrt(|dw_i| / ADV$_i)
 
-TODO: implement the simple capacity curve first; keep square-root impact as the
-second version.
+so ``base_t`` is computed once and scaled across the grid. sigma (daily vol) and
+ADV$ are trailing, lagged one day (no look-ahead) -- see scripts/capacity.py.
 """
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 
-def square_root_impact(
-    trade_fraction_adv: pd.DataFrame,
-    daily_vol: pd.DataFrame,
-    spread: pd.DataFrame | float,
-    eta: float = 0.1,
-) -> pd.DataFrame:
-    """Per-name impact cost (in return units) for a given trade size vs. ADV."""
-    raise NotImplementedError
+def sqrt_impact_base(dweights: pd.DataFrame, vol: pd.DataFrame, advdollar: pd.DataFrame) -> pd.Series:
+    """AUM/eta-free daily base of the square-root impact cost (return units).
+
+    cost_t(AUM, eta) = eta * sqrt(AUM) * base_t.
+    """
+    dw = dweights.abs()
+    per_name = dw * vol * np.sqrt(dw / advdollar)
+    # NaN (untraded names, or missing vol/ADV$ during warmup) are skipped by the
+    # sum. That slightly understates cost, but is negligible here (~0.001-0.002%
+    # of traded weight has missing vol/ADV$).
+    return per_name.sum(axis=1)
 
 
-def capacity_curve(signal: pd.DataFrame, returns: pd.DataFrame, aum_grid, config: dict):
-    """Net Sharpe as a function of deployed capital."""
-    raise NotImplementedError
+def participation_stats(dweights: pd.DataFrame, advdollar: pd.DataFrame, aum: float) -> dict:
+    """Distribution of participation (trade$ / ADV$) over traded name-days."""
+    dw = dweights.abs()
+    part = (dw * aum / advdollar).where(dw > 0).to_numpy()
+    part = part[np.isfinite(part)]
+    return {
+        "avg": float(np.mean(part)),
+        "p95": float(np.quantile(part, 0.95)),
+        "max": float(np.max(part)),
+        "pct>1%": float(np.mean(part > 0.01) * 100),
+        "pct>5%": float(np.mean(part > 0.05) * 100),
+        "pct>10%": float(np.mean(part > 0.10) * 100),
+    }

@@ -206,6 +206,27 @@ margin. Next: capacity (does the edge survive at scale once our own trades move 
 
 ---
 
+## 2026-06-27 - Capacity (locked candidate, IS 2000-2018)
+
+Square-root impact on top of the 7 bps floor; net Sharpe vs AUM (eta = impact coeff):
+
+| AUM   | eta=0.3 | eta=0.6 | eta=1.0 | max participation |
+|-------|---------|---------|---------|-------------------|
+| $10M  | 0.23    | 0.12    | -0.03   | 3.6%              |
+| $100M | -0.01   | -0.36   | -0.84   | 35.8%             |
+| $1B   | -0.78   | -1.90   | -3.38   | 358%              |
+
+**Low-capacity strategy.** Even optimistic eta=0.3 caps useful capacity ~$50-100M; mid/conservative eta
+caps it at ~$10-30M. Average participation stays tiny to $100M, but the MAX hits 36% of ADV at $100M and
+>100% by ~$316M -> a thin-name tail is the binding constraint, not the average. MVP does NOT cap
+participation; a real book would cap at ~1-5% ADV (bounds the tail, lowers deployable capital).
+Figure: reports/figures/capacity.png.
+
+Interpretation (literature-consistent): short-horizon residual reversal is a REAL but small-capacity edge --
+which is precisely why it persists (can't be scaled away). Honest, strong narrative.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
