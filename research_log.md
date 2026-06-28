@@ -255,6 +255,34 @@ market drift). Needs beta-adjusted legs to be conclusive.
 
 ---
 
+## 2026-06-27 - Robustness round 2: subperiod x cost + beta-adjusted legs (IS)
+
+Subperiod net Sharpe at 2/5/7/10 bps:
+
+| period    | gross | break | @2   | @5   | @7    | @10   |
+|-----------|-------|-------|------|------|-------|-------|
+| 2000-2006 | 1.11  | 17.6  | 0.98 | 0.79 | 0.67  | 0.48  |
+| 2007-2012 | 0.71  |  8.0  | 0.54 | 0.27 | 0.09  | -0.18 |
+| 2013-2018 | 0.85  |  6.9  | 0.61 | 0.24 | -0.01 | -0.38 |
+| ALL IS    | 0.90  | 11.3  | 0.74 | 0.50 | 0.34  | 0.10  |
+
+Recent period (2013-2018) is **THIN, not dead**: net-positive at <=5 bps, ~0 at 7, negative at 10. The edge
+became execution-dependent, not extinct (2-5 bps is realistic for liquid large-caps today).
+
+Beta-adjusted legs (CAPM vs EW eligible market, gross IS) -- the naive "long-side" read was a MARKET-BETA
+ARTIFACT:
+
+| leg   | contrib_ann | beta  | alpha_ann | IR   |
+|-------|-------------|-------|-----------|------|
+| long  | 5.5%        | +0.63 | 0.8%      | 0.18 |
+| short | -0.8%       | -0.51 | 4.6%      | 1.37 |
+
+**Alpha is on the SHORT side** (selling residual winners): short-leg alpha IR 1.37 vs long-leg 0.18. The
+long leg's 5.5% was mostly market beta. Short-side concentration helps explain persistence (harder to arb)
+and flags an UNMODELED cost: short borrow/constraints (document as a caveat; do NOT short-tilt = p-hacking).
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
