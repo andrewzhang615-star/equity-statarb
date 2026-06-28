@@ -283,6 +283,26 @@ and flags an UNMODELED cost: short borrow/constraints (document as a caveat; do 
 
 ---
 
+## 2026-06-27 - Robustness: liquidity buckets (IS, top 500/1000/1500)
+
+Locked candidate restricted to top-N by dollar volume (both traded universe AND sector peer set), 7 bps:
+
+| universe | names/day | gross | net  | net ann | breakeven |
+|----------|-----------|-------|------|---------|-----------|
+| top 500  | 448       | 0.79  | 0.31 | 2.2%    | 11.6 bps  |
+| top 1000 | 940       | 0.90  | 0.34 | 2.2%    | 11.3 bps  |
+| top 1500 | 1418      | 1.05  | 0.44 | 2.8%    | 12.2 bps  |
+
+Edge is **liquidity-robust**: breakeven stable ~11-12 bps across tiers; the most-liquid top-500 keeps a
+solid edge (gross 0.79, net 0.31) -> the alpha does NOT rely on illiquid/thin names. Sharpe rises modestly
+top500->top1500 but breakeven (per-trade edge) is flat -> the uptick is mostly diversification, not extra
+alpha. Ties to capacity: the thin-name tail was an EXECUTION/impact problem, not the alpha source (this also
+answers the "thin-name reliance" check). top-500 is likely the more capacity-robust deployment (edge held +
+higher ADV), but keep the locked candidate at top-1000 (switching to the best-looking bucket = p-hacking);
+flag top-500 as a viable higher-capacity variant for the writeup.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
