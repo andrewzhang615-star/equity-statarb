@@ -227,6 +227,34 @@ which is precisely why it persists (can't be scaled away). Honest, strong narrat
 
 ---
 
+## 2026-06-27 - Robustness: subperiod DECAY + leg attribution (IS)
+
+Subperiod stability (locked candidate, 7 bps):
+
+| period    | gross Sh | net Sh | net ann | breakeven |
+|-----------|----------|--------|---------|-----------|
+| 2000-2006 | 1.11     | 0.67   | 6.0%    | 17.6 bps  |
+| 2007-2012 | 0.71     | 0.09   | 0.4%    | 8.0 bps   |
+| 2013-2018 | 0.85     | -0.01  | -0.1%   | 6.9 bps   |
+
+**The net edge decayed.** Breakeven fell 17.6 -> 8.0 -> 6.9 bps; the GROSS per-trade edge ~halved over the
+sample (classic short-horizon reversal decay: crowding, decimalization, tighter markets). Breakeven is
+cost-assumption-independent, so the decay is real, not a flat-7bps artifact. Full-IS net Sharpe 0.34 was an
+AVERAGE masking strong-early / dead-recent.
+
+Nuance (don't over-read "dead"): flat 7 bps is anachronistic -- real costs fell post-2001 decimalization, so
+this overcharges the recent era. 2013-2018 breakeven 6.9 bps -> at realistic ~2-3 bps it's ~breakeven, not
+dead. Precise statement: edge decayed from large to THIN.
+
+Implication for OOS: 2019-2024 is even more recent -> expect modest/decayed. Set expectations; do NOT p-hack
+a recent-winning variant.
+
+Leg attribution (gross, IS): long (buy resid losers) ann 5.5% / Sh 0.43; short (sell resid winners) ann
+-0.8% / Sh ~0. Looks long-side concentrated BUT confounded by directional market exposure (long leg rides
+market drift). Needs beta-adjusted legs to be conclusive.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
