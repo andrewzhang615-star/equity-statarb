@@ -43,6 +43,9 @@ signals:
   s_score:
     entry: 1.25                # stretch: open when |s| > entry
     exit: 0.50                 # stretch: close when |s| < exit
+  winsorize:                   # cap daily returns for SIGNAL formation ONLY (never PnL)
+    lower: -0.20
+    upper: 0.20
 
 portfolio:
   gross_leverage: 1.0

@@ -137,20 +137,21 @@ def build_returns_full(daily: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_eligibility(daily: pd.DataFrame, dcfg: dict) -> pd.DataFrame:
-    """Boolean tradability mask: price >= min_price AND top-N by average $-volume,
-    AND not a delisting row.
+    """Boolean tradability mask: PRIOR-close price >= min_price AND top-N by average
+    $-volume, AND not a delisting row.
 
-    Computed contemporaneously (uses each day's own price/volume, known at the
-    decision-time close). The single sufficient look-ahead lag is applied by the
-    backtest engine, which shifts weights one period before they earn returns —
-    so we deliberately do NOT double-lag here. (Flagged for review.)
+    The price gate uses the *prior* close: a sub-$5 penny name should not become
+    tradable today purely because of a same-day spike (reversal shorts winners).
+    This is a deliberate robustness rule, not a look-ahead fix; the engine still
+    applies the single weight-shift for actual trade timing. Liquidity uses the
+    trailing average dollar volume (a rolling mean already dominated by the past).
     """
     daily = daily.copy()
     daily["dollar_vol"] = daily["prc"].abs() * daily["vol"]
     prc = daily.pivot_table(index="date", columns="permno", values="prc")
     dvol = daily.pivot_table(index="date", columns="permno", values="dollar_vol")
 
-    price_ok = prc.abs() >= dcfg["min_price"]
+    price_ok = prc.abs().shift(1) >= dcfg["min_price"]  # prior close (see docstring)
     adv = dvol.rolling(dcfg["adv_window"], min_periods=dcfg["adv_min_periods"]).mean()
     liquid_ok = adv.rank(axis=1, ascending=False) <= dcfg["universe_size"]
     eligible = (price_ok & liquid_ok).fillna(False)

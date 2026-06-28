@@ -100,6 +100,24 @@ def test_eligibility_excludes_low_price_and_illiquid():
     assert elig[20].any()           # liquid + priced -> tradable
 
 
+def test_eligibility_uses_prior_close():
+    # A name that was a sub-$5 penny stock yesterday must not be tradable today just
+    # because it spiked over $5 today (reversal would otherwise short the spike).
+    dates = pd.to_datetime(["2020-01-06", "2020-01-07", "2020-01-08"])
+    daily = pd.DataFrame(
+        {
+            "permno": [50, 50, 50, 60, 60, 60],
+            "date": list(dates) * 2,
+            "prc": [3.0, 3.0, 10.0, 10.0, 10.0, 10.0],  # 50 spikes today; 60 always priced
+            "vol": [1000, 1000, 1000, 1000, 1000, 1000],
+        }
+    )
+    dcfg = {"min_price": 5.0, "universe_size": 5, "adv_window": 2, "adv_min_periods": 1}
+    elig = load.build_eligibility(daily, dcfg)
+    assert elig[50].sum() == 0   # same-day spike to $10 doesn't qualify (prior close $3)
+    assert elig[60].iloc[2]      # tradable via prior close >= $5
+
+
 def test_delisting_row_is_not_eligible():
     dates = pd.to_datetime(["2020-01-06", "2020-01-07", "2020-01-08"])
     daily = pd.DataFrame(
@@ -113,7 +131,7 @@ def test_delisting_row_is_not_eligible():
     )
     dcfg = {"min_price": 5.0, "universe_size": 5, "adv_window": 2, "adv_min_periods": 1}
     elig = load.build_eligibility(daily, dcfg)
-    assert elig[40].iloc[0]          # tradable before delisting
+    assert elig[40].iloc[1]          # tradable before delisting (has a prior close)
     assert not elig[40].iloc[2]      # NOT tradable on the delisting row
 
 

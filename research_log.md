@@ -111,8 +111,24 @@ Coverage: 6,289 days x ~971 tradable names/day (stable). **Data gate: PASS.**
 
 ---
 
+## 2026-06-27 - Result: raw 5-day reversal (IN-SAMPLE 2000-2018)
+
+Dollar-neutral, ~969 names/day, signal winsorized +/-20%, eligibility = prior-close >= $5, 7 bps/unit turnover.
+
+- **Gross Sharpe 0.67** (ann 6.7%, vol 10.5%, maxDD -14%): a real but modest reversal effect, in
+  line with Lehmann / Lo-MacKinlay.
+- **Net Sharpe -0.39** (ann -4.5%, maxDD -69%): costs destroy it.
+- Turnover 0.63/day (sum|dw|) -> **breakeven cost 4.4 bps per unit turnover**. Realistic all-in costs
+  exceed that, so **raw short-horizon reversal does NOT survive costs** -- exactly the project's question.
+- Gross Sharpe ~0.67 (not implausibly high) is reassurance the pipeline isn't leaking.
+
+Next (MVP): does residualization (market, then sector) raise gross Sharpe and/or cut turnover enough to
+clear breakeven? Plus a lower-turnover variant (longer lookback / holding / signal threshold). Holdout sealed.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
 |------|------------------|--------|-----------|------------|-------|
-| | | | | | |
+| 2026-06-27 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
