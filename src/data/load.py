@@ -208,5 +208,31 @@ def load_eligible(config: dict | None = None) -> pd.DataFrame:
     return pd.read_parquet(path) if path.exists() else build_panel(config)[1]
 
 
+def build_sector_panel(config: dict | None = None) -> pd.DataFrame:
+    """Cache a point-in-time 2-digit SIC sector panel (dates x permno).
+
+    Uses the as-of `siccd` from the raw pull (no look-ahead). 2-digit sector =
+    SIC // 100 (major industry group).
+    """
+    cfg = config or CONFIG
+    dcfg = cfg["data"]
+    daily = pd.read_parquet(ROOT / dcfg["raw_path"], columns=["permno", "date", "siccd"])
+    _check_unique_permno_date(daily)
+    sic = pd.to_numeric(daily["siccd"], errors="coerce")
+    daily = daily.assign(sector2=sic // 100)
+    sector = daily.pivot(index="date", columns="permno", values="sector2")
+    out = ROOT / dcfg["sector_path"]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    sector.to_parquet(out)
+    print(f"sector panel: {sector.shape[0]:,} days x {sector.shape[1]:,} names")
+    return sector
+
+
+def load_sector(config: dict | None = None) -> pd.DataFrame:
+    cfg = config or CONFIG
+    path = ROOT / cfg["data"]["sector_path"]
+    return pd.read_parquet(path) if path.exists() else build_sector_panel(config)
+
+
 if __name__ == "__main__":
     build_panel()

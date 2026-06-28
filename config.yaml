@@ -14,6 +14,7 @@ data:
   delist_path: "data/raw/crsp_delist.parquet"        # raw dsedelist: dlret, dlstcd, dlstdt
   returns_full_path: "data/processed/returns_full.parquet"  # PnL panel — NEVER masked
   eligible_path: "data/processed/eligible.parquet"          # tradability mask — weights only
+  sector_path: "data/processed/sector.parquet"              # point-in-time 2-digit SIC panel
 
 delisting:
   # Imputation for MISSING delisting returns, applied at panel-build time
@@ -30,6 +31,7 @@ residual:
   method: "market"             # MVP: "market"; stretch: "pca" or "sector_etf"
   n_factors: 1                 # MVP market residual; increase only for PCA stretch
   estimation_window: 60        # trading days for residual estimation
+  sector_min_peers: 5          # min same-sector peers (excl self) to form a sector residual
   ou_min_halflife: 1           # days
   ou_max_halflife: 30          # stretch: only trade names that revert fast enough
 

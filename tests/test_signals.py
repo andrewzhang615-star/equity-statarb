@@ -48,6 +48,40 @@ def test_signal_to_weights_neutral_after_clip():
     assert w.sum(axis=1).abs().max() < 1e-9  # dollar-neutral even after clipping
 
 
+def test_sector_residual_leave_one_out():
+    from src.signals.residual import sector_residuals
+
+    dates = pd.date_range("2020-01-01", periods=2, freq="D")
+    cols = list(range(1, 9))  # 1..6 in sector 10 (6 names), 7..8 in sector 20 (2 names)
+    ret = pd.DataFrame(0.0, index=dates, columns=cols)
+    ret[6] = 0.6  # one winner in sector 10
+    sector = pd.DataFrame({c: (10 if c <= 6 else 20) for c in cols}, index=dates)
+    elig = pd.DataFrame(True, index=dates, columns=cols)
+
+    resid = sector_residuals(ret, sector, elig, min_peers=5)
+    # winner's LOO benchmark excludes itself (mean of 5 zeros) -> residual is its full move
+    assert abs(resid.loc[dates[0], 6] - 0.6) < 1e-6
+    # a flat peer: LOO mean = (0.6-0)/5 = 0.12 -> residual -0.12
+    assert abs(resid.loc[dates[0], 1] - (-0.12)) < 1e-6
+    # sector 20 has only 1 peer excl self (< min_peers) -> NaN, untradable
+    assert pd.isna(resid.loc[dates[0], 7])
+
+
+def test_sector_residual_accepts_nullable_eligible():
+    # Regression: parquet-loaded/reindexed eligibility can be pandas nullable
+    # boolean (object on .to_numpy()); sector_residuals must coerce to bool, not crash.
+    from src.signals.residual import sector_residuals
+
+    dates = pd.date_range("2020-01-01", periods=1, freq="D")
+    cols = list(range(1, 8))  # 7 names, one sector (6 peers excl self >= min_peers)
+    ret = pd.DataFrame(0.0, index=dates, columns=cols)
+    ret[1] = 0.7
+    sector = pd.DataFrame({c: 10 for c in cols}, index=dates)
+    elig = pd.DataFrame(True, index=dates, columns=cols).astype("boolean")  # nullable dtype
+    resid = sector_residuals(ret, sector, elig, min_peers=5)  # must not raise
+    assert abs(resid.loc[dates[0], 1] - 0.7) < 1e-6
+
+
 def test_signal_to_weights_respects_eligible():
     dates = pd.date_range("2020-01-01", periods=4, freq="D")
     sig = pd.DataFrame({"A": [1.0] * 4, "B": [-1.0] * 4, "C": [2.0] * 4}, index=dates)

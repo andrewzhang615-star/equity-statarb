@@ -17,6 +17,7 @@ after the market- and sector-residual baselines are working end-to-end.
 """
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from src.signals.reversal import reversal_signal, winsorize
@@ -66,6 +67,57 @@ def residual_reversal_signal(
     window = config["residual"]["estimation_window"]
     w = winsorize(returns, wcfg["lower"], wcfg["upper"])
     resid = market_residuals(w, window, eligible=eligible)
+    return reversal_signal(resid, lookback=rcfg["lookback"], skip=rcfg["skip"], winsor=None)
+
+
+def sector_residuals(
+    returns: pd.DataFrame,
+    sector: pd.DataFrame,
+    eligible: pd.DataFrame,
+    min_peers: int = 5,
+) -> pd.DataFrame:
+    """Leave-one-out sector demeaning over the eligible universe.
+
+    ``resid_i,t = ret_i,t - mean_{j != i, same sector, eligible}(ret_j,t)``.
+
+    Leave-one-out (excluding the stock from its own benchmark) avoids a name
+    mechanically pulling its sector mean toward itself -- which matters most in
+    small sectors. A stock with fewer than `min_peers` same-sector eligible peers
+    that day gets NaN (it does not trade). Sectors are point-in-time (no
+    look-ahead). Vectorized with one pass per distinct sector code.
+
+    Timing: the residual at day t uses same-day (cross-sectional) peer returns,
+    all known at close t; the reversal signal is formed at close t and traded at
+    t+1 via the engine's weight shift. Same-day peers are contemporaneous, not
+    look-ahead.
+    """
+    R = returns.to_numpy(dtype="float32")
+    S = sector.reindex_like(returns).to_numpy(dtype="float32")
+    E = eligible.reindex_like(returns).fillna(False).to_numpy(dtype=bool)
+    valid = E & ~np.isnan(R) & ~np.isnan(S)
+
+    resid = np.full(R.shape, np.nan, dtype="float32")
+    for k in np.unique(S[valid]):
+        member = (S == k) & valid
+        cnt = member.sum(axis=1)                       # names in sector k per day
+        denom = cnt - 1                                # peers excluding self
+        rsum = np.where(member, R, 0.0).sum(axis=1)    # sector return sum per day
+        with np.errstate(invalid="ignore", divide="ignore"):
+            loo = (rsum[:, None] - R) / denom[:, None]  # leave-one-out mean
+        assign = member & (denom >= min_peers)[:, None]
+        resid[assign] = (R - loo)[assign]
+    return pd.DataFrame(resid, index=returns.index, columns=returns.columns)
+
+
+def sector_reversal_signal(
+    returns: pd.DataFrame, config: dict, sector: pd.DataFrame, eligible: pd.DataFrame
+) -> pd.DataFrame:
+    """returns -> winsorize -> leave-one-out sector residuals -> reversal."""
+    rcfg = config["signals"]["reversal"]
+    wcfg = config["signals"]["winsorize"]
+    mp = config["residual"]["sector_min_peers"]
+    w = winsorize(returns, wcfg["lower"], wcfg["upper"])
+    resid = sector_residuals(w, sector, eligible, min_peers=mp)
     return reversal_signal(resid, lookback=rcfg["lookback"], skip=rcfg["skip"], winsor=None)
 
 

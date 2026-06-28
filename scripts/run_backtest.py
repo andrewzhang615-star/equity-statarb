@@ -12,8 +12,8 @@ import pandas as pd
 
 from src.backtest import engine, metrics
 from src.config import CONFIG
-from src.data.load import load_eligible, load_returns_full
-from src.signals.residual import residual_reversal_signal
+from src.data.load import load_eligible, load_returns_full, load_sector
+from src.signals.residual import residual_reversal_signal, sector_reversal_signal
 from src.signals.reversal import reversal_signal
 
 
@@ -54,6 +54,10 @@ def main() -> None:
 
     mres = residual_reversal_signal(returns, cfg, eligible=eligible)
     evaluate(f"Market-residual {rcfg['lookback']}d reversal", mres, returns, eligible, cfg)
+
+    sector = load_sector().reindex_like(returns)
+    sres = sector_reversal_signal(returns, cfg, sector, eligible)
+    evaluate(f"Sector-residual {rcfg['lookback']}d reversal", sres, returns, eligible, cfg)
 
 
 if __name__ == "__main__":

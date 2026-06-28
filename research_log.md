@@ -143,9 +143,32 @@ neutralization (mean edge) and turnover reduction (no-trade bands, smoothing, lo
 
 ---
 
+## 2026-06-27 - Sector-residual reversal (leave-one-out), IS 2000-2018
+
+Three-step progression (5d reversal, $-neutral, IS 2000-2018, 7 bps assumed):
+
+| variant             | gross Sharpe | gross ann | vol   | gross maxDD | turnover | breakeven |
+|---------------------|--------------|-----------|-------|-------------|----------|-----------|
+| raw                 | 0.67         | 6.7%      | 10.5% | -14.3%      | 0.63     | 4.4 bps   |
+| market-residual     | 1.00         | 8.0%      |  8.0% | -13.7%      | 0.63     | 5.1 bps   |
+| sector-residual LOO | 1.22         | 8.9%      |  7.2% |  -8.2%      | 0.64     | 5.5 bps   |
+
+Each residualization step raises the **per-trade edge** (breakeven 4.4 -> 5.1 -> 5.5 bps) and cuts vol +
+drawdown, confirming market & (especially) sector co-movement contaminated raw reversal. Sector = leave-
+one-out mean over eligible same-2-digit-SIC peers (>=5 peers), point-in-time.
+
+**Turnover stays ~0.63/day across all three** -> none clears 7 bps (all net-negative). The breakeven math
+is now demonstrated end-to-end: residualization improves the edge; the remaining 5.5 -> 7+ bps gap can only
+come from **turnover reduction** (no-trade band, EWMA smoothing, longer holding) = decisive next lever.
+Viability is also cost-assumption-sensitive: at <=5 bps the sector variant is ~breakeven -> motivates the
+cost-sensitivity + capacity analysis.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
 |------|------------------|--------|-----------|------------|-------|
 | 2026-06-27 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
 | 2026-06-27 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
+| 2026-06-27 | sector-residual 5d reversal (LOO) | 2-digit SIC, eligible peers ≥5, point-in-time | 1.22 gross / -0.33 net | sealed | **breakeven 5.5bps**; gross maxDD -8.2%; turnover pinned 0.64 |
