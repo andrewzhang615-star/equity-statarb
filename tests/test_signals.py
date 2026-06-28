@@ -82,6 +82,25 @@ def test_sector_residual_accepts_nullable_eligible():
     assert abs(resid.loc[dates[0], 1] - 0.7) < 1e-6
 
 
+def test_candidate_weights_runs_and_dollar_neutral():
+    import numpy as np
+    from src.portfolio.construct import candidate_weights
+
+    rng = np.random.default_rng(1)
+    dates = pd.date_range("2020-01-01", periods=30, freq="B")
+    cols = list(range(1, 13))  # 12 names, 6 per sector (>= min_peers)
+    returns = pd.DataFrame(rng.normal(0, 0.02, (30, 12)), index=dates, columns=cols)
+    sector = pd.DataFrame({c: (10 if c <= 6 else 20) for c in cols}, index=dates)
+    eligible = pd.DataFrame(True, index=dates, columns=cols)
+    cfg = {
+        "signals": {"reversal": {"lookback": 5, "skip": 0}, "winsorize": {"lower": -0.2, "upper": 0.2}},
+        "residual": {"sector_min_peers": 5},
+        "portfolio": {"gross_leverage": 1.0, "max_weight": 0.5, "market_neutral": True, "smoothing_halflife": 5},
+    }
+    w = candidate_weights(returns, eligible, sector, cfg)
+    assert abs(w.iloc[-1].sum()) < 1e-9  # dollar-neutral after warmup
+
+
 def test_ewma_smooth_identity_and_smoothing():
     dates = pd.date_range("2020-01-01", periods=10, freq="D")
     sig = pd.DataFrame({"a": [1.0, -1.0] * 5}, index=dates)  # alternating -> high churn

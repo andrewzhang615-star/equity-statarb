@@ -191,6 +191,21 @@ CAVEATS (do not over-claim): IS-only; halflife is a TUNED knob (best of sweep); 
 
 ---
 
+## 2026-06-27 - Cost sensitivity (locked candidate, IS 2000-2018)
+
+Net Sharpe vs assumed per-turnover cost for sector-residual + EWMA hl=5 (turnover 0.228/day):
+
+| cost bps | 0 | 5 | 7 (assumed) | 10 | 11.3 | 12 |
+|----------|---|---|-------------|----|------|----|
+| net Sh   | 0.90 | 0.50 | 0.34 | 0.10 | ~0 (breakeven) | -0.06 |
+
+~Linear (~ -0.08 Sharpe per bp); net-positive for costs up to ~11 bps. Figure:
+`reports/figures/cost_sensitivity.png`. Takeaway: viability hinges on executing below ~11 bps/turnover --
+plausible for patient trading in top-1000 liquid names; even naive ~7 bps leaves a thin but positive
+margin. Next: capacity (does the edge survive at scale once our own trades move prices?).
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
