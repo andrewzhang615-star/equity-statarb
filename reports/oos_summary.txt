@@ -1,0 +1,6 @@
+=== ONE-SHOT OOS | frozen candidate | split at 2019-01-01 | floor 7 bps ===
+  IN-SAMPLE    days  4779 | gross Sh  0.90 | net@2  0.74  net@5  0.50  net@7  0.34 | ann@7   2.2% | maxDD -14.0% | breakeven 11.3 bps | turn 0.23
+  OUT-SAMPLE   days  1510 | gross Sh  0.23 | net@2  0.12  net@5 -0.04  net@7 -0.15 | ann@7  -2.1% | maxDD -23.1% | breakeven  4.2 bps | turn 0.23
+
+Deflated Sharpe (IS net, 12 trials): P(true Sharpe>0 after selection) = 0.20
+saved /Users/andrewzhang/Documents/equity-statarb/reports/figures/oos_equity.png

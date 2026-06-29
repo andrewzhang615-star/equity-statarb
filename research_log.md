@@ -426,6 +426,31 @@ capacity grids, and the cap are sensitivities on the fixed candidate, not separa
 
 ---
 
+## 2026-06-27 - ONE-SHOT OOS RESULT (2019-2024) -- frozen candidate
+
+|            | gross Sh | net@2 | net@5 | net@7 | ann@7 | maxDD  | breakeven | turn |
+|------------|----------|-------|-------|-------|-------|--------|-----------|------|
+| IN-SAMPLE  | 0.90     | 0.74  | 0.50  | 0.34  | +2.2% | -14.0% | 11.3 bps  | 0.23 |
+| OUT-SAMPLE | 0.23     | 0.12  | -0.04 | -0.15 | -2.1% | -23.1% |  4.2 bps  | 0.23 |
+
+Deflated Sharpe (IS net, 12 trials): P(true Sharpe>0 | selection) = **0.20**.
+
+**Conclusion: the edge did NOT survive OOS at realistic costs.** Gross Sharpe 0.90 -> 0.23; breakeven
+continued decaying 17.6 -> 8.0 -> 6.9 (IS subperiods) -> **4.2 bps (OOS)**. Net positive only at ~2 bps
+(0.12), negative at 5-7. OOS maxDD -23% = the 2020 COVID crash/rebound (the violent-momentum regime the
+diagnostics flagged). Deflated Sharpe 0.20 -> the IS net result is largely consistent with selection luck
+once the ~12 configs are accounted for.
+
+**Honest, on-thesis result (not a failure):** short-horizon residual reversal was a strong real edge in the
+early 2000s, decayed steadily (crowding, decimalization, efficiency), and by 2019-2024 no longer clears
+realistic costs -- a crowded, cost-sensitive, capacity-constrained anomaly arbitraged down. Backed by a
+leak-safe pipeline, residualization ladder, cost/capacity analysis, regime + short-side diagnostics, a
+frozen spec, and a true one-shot holdout. Files: reports/oos_summary.txt, reports/figures/oos_equity.png.
+
+**Holdout now spent. No further tuning/evaluation on 2019-2024.** Next: writeup (README + research memo).
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
