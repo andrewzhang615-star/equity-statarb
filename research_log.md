@@ -332,6 +332,46 @@ execution-dependent, short-side alpha that decayed over time. Capping = risk con
 
 ---
 
+## === FINAL STRATEGY SPECIFICATION -- FROZEN 2026-06-27 (pre-OOS) ===
+
+Locked BEFORE looking at the 2019-2024 holdout. No further IS tuning.
+
+**OOS alpha candidate:**
+- Signal: 5-day short-horizon reversal on leave-one-out SECTOR-RESIDUAL returns.
+  - sector = 2-digit SIC (point-in-time); LOO mean over eligible same-sector peers, min 5 peers.
+  - reversal = -(sum of trailing 5d residual returns); signal input winsorized at +/-20%.
+- Turnover control: EWMA smoothing of the signal, halflife = 5 trading days.
+- Universe: top-1000 by trailing 60d dollar volume; prior-close >= $5; common shares (shrcd 10,11);
+  NYSE/AMEX/NASDAQ (exchcd 1,2,3); delisting rows excluded.
+- Weights: cross-sectionally dollar-neutral, per-name cap 2%, gross leverage 1.0.
+- Costs (evaluation): 7 bps/turnover linear floor (headline); 2-10 bps sensitivity reported.
+- Data: CRSP daily 2000-2024; missing performance-delisting return imputed -0.30 (Shumway).
+- Split: IS 2000-2018 (all research/tuning); OOS 2019-2024 (run ONCE, no re-tuning).
+
+**Reported alongside (NOT part of the OOS alpha):**
+- Capacity: square-root impact, eta {0.3,0.6,1.0} -> ~$10-100M (eta-dependent).
+- Position (ADV) cap: deployment risk control; bounds tail impact, doesn't add capacity.
+- top-500 universe: capacity-friendly variant (edge holds).
+
+**Decisions deliberately NOT taken (anti-p-hacking):**
+- No SHORT-tilt despite short-side alpha (IR 1.37 vs 0.18) -- fitting + adds short-borrow realism.
+- No switch to top-500 despite better capacity -- keep pre-declared top-1000.
+- No ADV position cap inside the OOS alpha (implementation-only).
+- No cherry-picked / time-varying cost schedule for the headline (flat 7 bps; sensitivity shown).
+- No further IS tuning.
+
+**IS headline (locked candidate, 7 bps):** gross Sharpe 0.90, net 0.34 (t~1.5), breakeven 11.3 bps,
+turnover 0.23/day. Decayed across subperiods (breakeven 17.6 -> 8.0 -> 6.9 bps); thin & execution-
+dependent by 2013-2018.
+
+**Trials tried (for deflated Sharpe):** ~12 strategy configs -- raw; market-residual (full + eligible
+proxy); sector-residual; EWMA hl {2,3,5,10}; holding-period k {2,3,5,10}. (Liquidity buckets, cost/eta/
+capacity grids, and the cap are sensitivities on the fixed candidate, not separate alphas.)
+
+**OOS expectation (pre-stated):** modest/marginal at 7 bps; likely positive only at low (<=5 bps) cost.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |

@@ -17,6 +17,7 @@ venv/
 # Reports
 reports/figures/*
 !reports/figures/.gitkeep
+!reports/figures/*.png
 
 # OS
 .DS_Store
