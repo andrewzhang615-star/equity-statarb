@@ -332,6 +332,60 @@ execution-dependent, short-side alpha that decayed over time. Capping = risk con
 
 ---
 
+## 2026-06-27 - Diagnostics: IC decay + macro/regime conditioning (IS)
+
+(1) Rank-IC of the (pre-EWMA) sector-residual reversal signal vs forward CUMULATIVE residual returns:
+
+| horizon | 1d | 2d | 3d | 5d | 10d |
+|---------|----|----|----|----|----|
+| rank-IC | +0.0098 | +0.0139 | +0.0162 | +0.0186 | +0.0165 |
+
+Cumulative IC rises to a peak at ~5 days then plateaus/declines -> the reversal realizes over ~a week,
+justifying the 5-day lookback + EWMA hl=5. IC magnitudes (~0.01-0.019) small but typical/solid for daily
+equity signals; positive & consistent. (Raw t-stats omitted -- overlapping forward windows inflate them.)
+
+(2) Macro / regime conditioning (GROSS, IS) -- supports the "fade dislocation" mechanism:
+- market realized vol (21d): low Sh 0.90 | mid 0.07 | high 1.60 (ann 18.1%). High-vol dominates.
+- cross-sectional dispersion: low 0.26 | mid 0.57 | high 1.45 (ann 16.8%). MONOTONIC in dispersion.
+- market direction: up-days Sh 3.18 (ann 26.7%) | down-days Sh -2.10 (ann -13%).
+
+Reads: edge concentrated in **high-vol / high-dispersion** markets (reversal = paid to provide liquidity into
+dislocation). And despite dollar-neutral construction the PnL is **NOT market-state-neutral**: makes money on
+up days, loses on down days. Precise framing (per review -- don't overclaim "short-vol" off a single-day
+split): **liquidity-provision / crash-risk exposure -- best when dislocations mean-revert, struggles when
+selloffs persist** (to be substantiated with multi-day drawdown/crash episodes in batch 2). Partly residual
+net beta (+0.12) but too large to be only that -> genuine regime dependence. Honest risk caveat + macro hook.
+
+---
+
+## 2026-06-27 - Diagnostics 2: PnL attribution + short-side + crash episodes (IS)
+
+(a) Concentration -- BROAD, not a few-name artifact:
+- top-10 names 8.3% of gross PnL, top-50 30.5%; 2356 names net-positive vs 1484 negative.
+- by year: front-loaded (2000 +0.36, 2001 +0.21 -> decay); 2008 strong (+0.16, high-vol paying off);
+  2009 the only down year (-0.02, the violent rebound); 2010-2018 thin but mostly positive.
+- by 2-digit SIC (point-in-time): tech-leaning (73 software +0.34 ~= 28% of total, 36 electronics +0.23,
+  35, 38) -> mild tech concentration to flag; bottom sectors only slightly negative.
+
+(b) Short-side realism: short-leg PnL by PRICE concentrates in LOW-PRICE names ($5-10 +0.55, $10-25 +0.43;
+  $25-50 -0.20, $50+ -0.80); by ADV ~flat. Profitable shorting is in cheap (still-liquid, top-1000) names ->
+  **borrow-cost / short-squeeze realism caveat** (low-price = costlier to borrow), not an illiquidity issue.
+  Matters because the alpha is short-side.
+
+(c) Crash / drawdown episodes -- REFINES the risk story (per the don't-overclaim caution):
+- Worst drawdown -14.0% is a LONG SLOW GRIND 2002-01 -> 2008-07 while the market rose +39.5% -> worst pain is
+  the CALM low-vol bull (decay + cost grind), NOT a crash.
+- Worst 5 months are MOMENTUM EXTREMES in BOTH directions: 2000-02 (mkt +16.5%, dot-com blow-off) and 2009-04
+  (mkt +16.4%, GFC rebound) are the two worst -- violent RALLIES; plus selloffs 2001-09 (-15.5%), 2000-11
+  (-17.4%), 2002-02 (-5.0%).
+
+**Corrected framing:** the strategy is **short momentum / long reversion (liquidity provision)** -- earns by
+fading dislocations in high-vol/dispersed markets; loses when momentum dominates (strong trends EITHER
+direction) and bleeds slowly in calm low-vol bulls. NOT simply "short-vol / loses in selloffs" (the two worst
+months were rallies). Precise, defensible interview narrative.
+
+---
+
 ## === FINAL STRATEGY SPECIFICATION -- FROZEN 2026-06-27 (pre-OOS) ===
 
 Locked BEFORE looking at the 2019-2024 holdout. No further IS tuning.
