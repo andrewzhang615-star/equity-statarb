@@ -64,9 +64,11 @@ Read selectively and tie each back to a specific choice we made.
 ```bash
 cd <repo>
 pandoc reports/memo.md -o reports/Equity_StatArb_Memo.docx
-pandoc reports/memo.md -o reports/Equity_StatArb_Memo.pdf --pdf-engine=xelatex \
-  -V geometry:margin=1in -V mainfont="Helvetica Neue" -V fontsize=11pt
+pandoc reports/memo.md -o reports/Equity_StatArb_Memo.pdf --pdf-engine=xelatex
 ```
+
+(All styling — 12pt Computer Modern, geometry, abstract, numbered sections — lives in
+the `memo.md` YAML front matter, so the build commands stay bare.)
 
 If you prefer editing in Word, copy important prose changes back into `reports/memo.md`
 afterward so the two don't drift. Keep any changed numbers consistent with
