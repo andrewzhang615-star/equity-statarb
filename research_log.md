@@ -303,6 +303,35 @@ flag top-500 as a viable higher-capacity variant for the writeup.
 
 ---
 
+## 2026-06-27 - Participation (position) cap (IS, eta=0.6)
+
+Capped each name's position to cap_frac of its ADV$ (|w| <= cap_frac*ADV$/AUM, re-neutralized over TRADED
+names), re-ran capacity. (Bug found & fixed first: a blanket re-neutralization leaked weight onto zero-ADV
+untraded names -> inf participation / NaN net; now demean over traded names only + keep untraded at 0,
+regression-tested.)
+
+net Sharpe by AUM x cap (eta=0.6, 7 bps floor):
+
+| AUM   | uncapped | cap5% | cap10% | cap25% |
+|-------|----------|-------|--------|--------|
+| $10M  | 0.12     | 0.12  | 0.12   | 0.12   |
+| $100M | -0.36    | -0.32 | -0.36  | -0.36  |
+| $1B   | -1.90    | -0.94 | -1.19  | -1.54  |
+| $10B  | -6.61    | -1.43 | -1.91  | -2.75  |
+
+max participation at $1B: uncapped 358% -> cap5% 26%, cap10% 25%.
+
+Reads: the cap **sharply limits impact damage at scale** (tighter = better; $10B net -6.6 -> -1.4 w/ cap5%;
+$1B max participation 358% -> ~25%). BUT it does NOT extend the net-positive frontier (still ~$10M, ~break-
+even by $30M) -- it limits downside, not adds capacity, because the edge itself is thin. Caveat: a POSITION
+cap bounds position/ADV but not the extreme TRADE/ADV tail (max ~300% at $10B); a true path-dependent trade
+cap would (future refinement). Figure: reports/figures/participation_cap.png.
+
+**Robustness battery complete.** Story reinforced: real but small-capacity (~$10-30M @ mid impact),
+execution-dependent, short-side alpha that decayed over time. Capping = risk control, not capacity unlock.
+
+---
+
 ## Experiment ledger
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |

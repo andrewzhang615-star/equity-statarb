@@ -109,6 +109,37 @@ def test_ewma_smooth_identity_and_smoothing():
     assert sm["a"].diff().abs().mean() < sig["a"].diff().abs().mean()  # smoother
 
 
+def test_apply_position_cap_caps_thin_name_and_neutral():
+    import numpy as np
+
+    n = 50
+    dates = pd.date_range("2020-01-01", periods=1, freq="D")
+    cols = list(range(n))
+    w = pd.DataFrame([[0.0] * n], index=dates, columns=cols)
+    w.iloc[0, 0] = 0.20                       # one big position in a thin name...
+    w.iloc[0, 1:] = -0.20 / (n - 1)           # ...offset so the book is dollar-neutral
+    adv = pd.DataFrame([[1e9] * n], index=dates, columns=cols)
+    adv.iloc[0, 0] = 1e6                       # name 0 is thin (low ADV)
+
+    capped = engine.apply_position_cap(w, adv, aum=1e8, cap_frac=0.10)
+    # name 0 cap = 0.10 * 1e6 / 1e8 = 0.001; was 0.20 -> must shrink drastically
+    assert abs(capped.iloc[0, 0]) < 0.02
+    assert abs(capped.iloc[0].sum()) < 1e-9   # still dollar-neutral
+
+
+def test_position_cap_keeps_untraded_names_at_zero():
+    import numpy as np
+    # Regression: re-neutralization must NOT leak weight onto untraded names
+    # (which can have zero/NaN ADV -> infinite participation).
+    dates = pd.date_range("2020-01-01", periods=1, freq="D")
+    cols = [0, 1, 2, 3]
+    w = pd.DataFrame([[0.10, -0.10, 0.0, 0.0]], index=dates, columns=cols)  # 2,3 untraded
+    adv = pd.DataFrame([[1e9, 1e9, np.nan, 0.0]], index=dates, columns=cols)  # 2 NaN, 3 zero ADV
+    capped = engine.apply_position_cap(w, adv, aum=1e8, cap_frac=0.10)
+    assert capped.iloc[0, 2] == 0.0 and capped.iloc[0, 3] == 0.0  # untraded stay exactly 0
+    assert abs(capped.iloc[0].sum()) < 1e-9                        # still neutral
+
+
 def test_apply_holding_period_holds_between_rebalances():
     import numpy as np
 

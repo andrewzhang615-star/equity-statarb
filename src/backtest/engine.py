@@ -97,3 +97,29 @@ def apply_holding_period(weights: pd.DataFrame, k: int) -> pd.DataFrame:
     non_rebalance = np.where((np.arange(len(held)) % k) != 0)[0]
     held.iloc[non_rebalance] = np.nan      # blank the off-grid days...
     return held.ffill().fillna(0.0)        # ...and carry the last rebalance forward
+
+
+def apply_position_cap(
+    weights: pd.DataFrame,
+    advdollar: pd.DataFrame,
+    aum: float,
+    cap_frac: float,
+    market_neutral: bool = True,
+) -> pd.DataFrame:
+    """Cap each name's position to a fraction of its ADV$: |wᵢ| ≤ cap_frac·ADV$ᵢ/AUM,
+    then re-neutralize. Bounds the thin-name impact tail.
+
+    This is a vectorized POSITION/target cap, not a true (path-dependent) "never
+    trade >X% ADV/day" trade cap. In a broad book the re-neutralization offset is
+    tiny so caps effectively hold; in a narrow book it can relax them slightly.
+    """
+    max_w = (cap_frac * advdollar / aum).reindex_like(weights)
+    max_w = max_w.where(max_w.notna(), np.inf)       # missing ADV -> no cap
+    capped = weights.clip(lower=-max_w, upper=max_w)
+    if market_neutral:
+        # Re-neutralize over TRADED names only, and keep untraded names at exactly
+        # zero. (A blanket demean would leak tiny weight onto non-eligible names
+        # with zero/NaN ADV, blowing up participation/impact.)
+        traded = weights != 0
+        capped = capped.sub(capped.where(traded).mean(axis=1), axis=0).where(traded, 0.0)
+    return capped
