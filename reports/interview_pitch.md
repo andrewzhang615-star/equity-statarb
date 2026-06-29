@@ -4,7 +4,7 @@
 
 I tested whether a classic stat-arb signal — short-horizon reversal in US equities — still survives realistic implementation, using survivorship-bias-free CRSP daily data from 2000 to 2024.
 
-The backtest is deliberately leak-safe: realized returns and tradability are kept in separate panels so a losing position can't silently vanish, delisting returns are imputed (Shumway), and weights are shifted one day so nothing uses future information. I built the signal up in stages — raw reversal, then residualizing out market and then sector co-movement (leave-one-out within industry), then EWMA smoothing to control turnover. In sample that's net-positive after costs: Sharpe 0.34 at 7 bps, break-even cost 11 bps.
+The backtest is deliberately leak-safe: realized returns and tradability are kept in separate panels so a losing position can't silently vanish, delisting returns are imputed (Shumway), and weights are shifted one day so nothing uses future information. I built the signal up in stages — raw reversal, then residualizing out market and then sector co-movement (leave-one-out within industry), then EWMA smoothing to control turnover. In sample that's net-positive after costs: Sharpe 0.34 at 7 bps, break-even cost 11.3 bps.
 
 But I treated cost and capacity as first-class, not an afterthought. Capacity is only about \$10–100M — the binding constraint is a thin-name tail, not average liquidity — and the alpha is concentrated on the short side, in low-price names that are expensive to borrow.
 
