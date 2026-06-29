@@ -1,99 +1,89 @@
-# Equity Statistical Arbitrage: Execution-Aware Residual Reversal
+# Execution-Aware Short-Horizon Equity Reversal
+### Evidence of decay, costs, and capacity limits (US equities, 2000–2024)
 
-A research project testing whether short-horizon reversal in liquid US equities
-survives a stricter, implementation-aware backtest. The core question is:
+**Does short-horizon residual reversal in US equities still survive realistic execution?**
+This repo answers that with a leak-safe CRSP backtest, building from a raw reversal baseline
+up to a sector-residual, turnover-controlled strategy, then stress-testing it for costs,
+capacity, and regime dependence — and validating it once on a sealed out-of-sample period.
 
-> **Does residual short-term reversal remain economically meaningful after
-> realistic turnover, transaction costs, and capacity constraints?**
+**Headline finding:** the edge was real and strong in the early 2000s but **decayed steadily
+and does not survive realistic costs out-of-sample (2019–2024)** — a crowded, cost-sensitive,
+low-capacity anomaly that has largely been arbitraged away.
 
-The project is intentionally scoped for a 2-3 week recruiting sprint. The goal is
-not to find an overfit high-Sharpe backtest; it is to build a clean,
-reproducible research repo that shows data discipline, honest evaluation, and
-practical trading realism.
+|                              | Gross Sharpe | Net Sharpe @7bps | Breakeven cost |
+|------------------------------|:-----------:|:----------------:|:--------------:|
+| In-sample (2000–2018)        | 0.90        | **+0.34**        | 11.3 bps       |
+| **Out-of-sample (2019–2024)**| **0.23**    | **−0.15**        | **4.2 bps**    |
 
-## MVP scope
+Deflated Sharpe of the in-sample result (accounting for the 12 configurations tried): **0.20**.
 
-The first complete version should include:
+![Net equity curve — in-sample then out-of-sample](reports/figures/oos_equity.png)
 
-1. **CRSP daily data pipeline:** survivorship-bias-free US equities via WRDS,
-   including delisting returns and point-in-time share/exchange filters.
-2. **Liquid universe construction:** top names by lagged trailing dollar volume,
-   with price and share-code filters applied without look-ahead.
-3. **Raw short-horizon reversal baseline:** buy recent losers and sell recent
-   winners in a dollar-neutral portfolio.
-4. **Residualized reversal baseline:** remove common market/factor exposure,
-   then test reversal on residual returns.
-5. **Execution-aware evaluation:** turnover, commissions, slippage, cost
-   sensitivity, and a simple capacity curve.
-6. **Robustness:** in-sample vs. true out-of-sample, parameter sensitivity, and
-   drawdown/regime diagnostics.
+## Why this question
+Short-horizon reversal (Lehmann 1990; Lo–MacKinlay 1990) is a textbook stat-arb effect. The
+practitioner's question isn't "does it appear in a backtest" — it's whether it survives
+**turnover, transaction costs, and capacity** once implemented honestly. This project answers
+that with disciplined methodology rather than a curve fit; the goal is a credible research
+process, and the negative-but-rigorous result is the point.
 
-## Stretch goals
+## The research arc
+- **Leak-safe data layer** — survivorship-bias-free CRSP daily via WRDS; delisting returns
+  imputed (Shumway −30% for missing performance delistings); point-in-time universe; and a
+  strict split between the *realized-return* panel and the *tradability* mask, so a losing
+  position can never silently vanish from PnL.
+- **Signal ladder** — raw reversal → market-residual → **leave-one-out sector-residual**;
+  each step lifts the per-trade edge (breakeven 4.4 → 5.1 → 5.5 bps).
+- **Turnover control** — EWMA signal smoothing roughly halves turnover and flips the
+  in-sample net Sharpe positive (breakeven 5.5 → 11.3 bps).
+- **Execution layer** — a cost-sensitivity curve and a square-root market-impact capacity
+  analysis (usable capacity ~$10–100M; a thin-name participation tail is the binding
+  constraint, partly controlled by an ADV position cap).
+- **Diagnostics** — subperiod decay; beta-adjusted legs (the alpha is **short-side**,
+  concentrated in **low-price** names → a borrow caveat); regime conditioning (the strategy
+  behaves like **short-momentum / liquidity provision** — earns in high-dispersion markets,
+  loses when trends persist); broad PnL (top-10 names ≈ 8%).
+- **One-shot OOS** — the frozen candidate evaluated exactly once on 2019–2024.
 
-Only add these after the MVP works end-to-end:
+## Key figures
+`reports/figures/oos_equity.png` (net equity, IS │ OOS) · `cost_sensitivity.png` ·
+`capacity.png` · `participation_cap.png`. Full write-up: **`reports/Equity_StatArb_Memo.pdf`**.
 
-- PCA residualization and Avellaneda-Lee-style OU s-scores.
-- A longer-horizon momentum tilt.
-- Formal multiple-testing adjustments / deflated Sharpe.
-- More detailed market-impact modeling inspired by Almgren-Chriss.
-
-## Data
-
-Survivorship-bias-free **CRSP daily** data via WRDS (includes delisting returns and
-point-in-time share/exchange codes). See `src/data/wrds_pull.py`.
-
-> **Setup (one-time):** create a WRDS account, then `pip install wrds`. The first call to
-> `wrds.Connection()` prompts for your username/password and offers to store a `~/.pgpass`
-> file so future pulls are passwordless. Raw data is cached under `data/raw/` (git-ignored).
-
-## Repository structure
-
-```
-config.yaml          Single source of truth: universe, dates, signal & cost params, seed
-research_log.md       Running research journal (decisions, experiments, dead ends)
-src/
-  config.py           Loads config.yaml
-  data/
-    wrds_pull.py      Pull survivorship-free CRSP daily data from WRDS
-    load.py           Clean + build the (dates x permno) returns panel; liquidity universe
-  signals/
-    reversal.py       Raw short-horizon reversal baseline                       [TODO]
-    residual.py       Residualized reversal; PCA/OU as stretch                  [TODO]
-    momentum.py       Momentum tilt stretch goal                                [TODO]
-  portfolio/
-    construct.py      Signal -> weights, blending, neutralization               [TODO]
-    costs.py          Linear + impact transaction-cost models                   [TODO]
-  backtest/
-    engine.py         Vectorized cross-sectional backtest (look-ahead-safe)
-    metrics.py        Sharpe, IR, drawdown, Calmar, turnover, deflated Sharpe
-  execution/
-    impact.py         Simple capacity curve; square-root impact as stretch       [TODO]
-notebooks/            01_eda, 02_baseline, 03_signal_research, 04_results
-scripts/run_backtest.py   End-to-end orchestration
-tests/                Metric + look-ahead-guard tests
-reports/              Figures + the research memo (memo.md)
-```
-
-## Quickstart
-
+## Reproduce
 ```bash
 pip install -r requirements.txt
-python -c "from src.data.wrds_pull import pull_crsp_daily; pull_crsp_daily()"   # your WRDS login
-python -c "from src.data.load import build_panel; build_panel()"
-pytest -q
+# 1) pull CRSP (needs a WRDS account; first call prompts for login)
+python -c "from src.data.wrds_pull import pull_crsp_daily; pull_crsp_daily()"
+# 2) build leak-safe panels
+python -c "from src.data.load import build_panel, build_sector_panel; build_panel(); build_sector_panel()"
+# 3) analyses (each writes a table and/or a figure)
+python scripts/run_backtest.py       # raw vs market-residual vs sector-residual
+python scripts/cost_sensitivity.py   # net Sharpe vs cost
+python scripts/capacity.py           # net Sharpe vs AUM (market impact)
+python scripts/robustness.py         # subperiod decay + beta-adjusted legs
+python scripts/oos_evaluation.py     # the one-shot OOS
+pytest -q                            # 28 tests (incl. look-ahead + leak guards)
 ```
 
-## Current Status
+## Repo map
+```
+config.yaml          single source of truth (universe, costs, params, OOS split)
+research_log.md      full dated decision journal + experiment ledger
+src/
+  data/    wrds_pull (raw CRSP) · load (leak-safe panels, delisting, eligibility, sectors)
+  signals/ reversal · residual (market + LOO sector) · momentum (stub)
+  portfolio/ construct (locked candidate) · costs
+  backtest/ engine (look-ahead-safe) · metrics (Sharpe/IR/DD/turnover/deflated Sharpe)
+  execution/ impact (square-root impact, participation, capacity)
+scripts/   one script per analysis (see Reproduce)
+tests/     metric, pipeline-leak, signal, and impact tests
+reports/   memo + figures
+```
 
-Phase 0-1 (scaffold + data). The immediate next gate is to pull CRSP data,
-build the returns panel, and run the raw reversal baseline. Signal modules are
-stubs to be implemented in MVP order. See `research_log.md` for the running
-plan and experiment ledger.
+## Honest limitations
+Flat 7 bps cost headline (2–10 bps sensitivity reported); square-root impact coefficient is
+uncertain (a range is shown); short borrow is not modeled (relevant since the alpha is
+short-side); daily data, so this is *execution-aware*, not intraday/limit-order-book.
 
 ## References
-
-- Lehmann (1990); Lo & MacKinlay (1990) - short-horizon reversal
-- Avellaneda & Lee (2010), *Statistical Arbitrage in the US Equities Market*
-- Jegadeesh & Titman (1993), *Returns to Buying Winners and Selling Losers*
-- Harvey, Liu & Zhu (2016); Bailey & Lopez de Prado (2014) - multiple testing / deflated Sharpe
-- Almgren & Chriss (2000), *Optimal Execution of Portfolio Transactions*
+Lehmann (1990) · Lo & MacKinlay (1990) · Avellaneda & Lee (2010) · Jegadeesh & Titman (1993) ·
+Harvey, Liu & Zhu (2016) · Bailey & López de Prado (2014) · Almgren & Chriss (2000).
