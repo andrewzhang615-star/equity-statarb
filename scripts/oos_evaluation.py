@@ -20,6 +20,10 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+from src.plotstyle import apply_style
+
+apply_style()
 import numpy as np
 import pandas as pd
 

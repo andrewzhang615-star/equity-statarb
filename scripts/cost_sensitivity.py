@@ -20,6 +20,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from src.plotstyle import apply_style
+
+apply_style()
+
 from src.backtest import engine, metrics
 from src.config import CONFIG, ROOT
 from src.data.load import load_eligible, load_returns_full, load_sector
