@@ -82,8 +82,8 @@ def main() -> None:
     ax.axvline(oos, color="red", ls="--", lw=1, label=f"OOS start {oos.date()}")
     ax.set_yscale("log")
     ax.set_xlabel("date")
-    ax.set_ylabel("net equity (log, 7 bps)")
-    ax.set_title("Frozen candidate: net equity curve (IS | OOS)")
+    ax.set_ylabel("Net equity (log scale)")
+    ax.set_title("Net equity curve (IS | OOS)")
     ax.legend()
     fig_out = ROOT / "reports/figures/oos_equity.png"
     fig.tight_layout()
