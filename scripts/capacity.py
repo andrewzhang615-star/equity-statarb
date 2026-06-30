@@ -88,8 +88,9 @@ def main() -> None:
         print(f"  ${aum/1e6:7.0f}M    {row[0]:6.2f}   {row[1]:6.2f}   {row[2]:6.2f}")
 
     fig, ax = plt.subplots(figsize=(7, 4.5))
-    for e in etas:
-        ax.plot(aum_grid / 1e6, curves[e], marker="o", label=f"eta={e}")
+    colors = ["black", "red", "blue"]  # eta = 0.3 / 0.6 / 1.0
+    for e, c in zip(etas, colors):
+        ax.plot(aum_grid / 1e6, curves[e], color=c, label=f"eta={e}")
     ax.axhline(0, color="grey", lw=0.8)
     ax.set_xscale("log")
     ax.set_xlabel("deployed AUM ($M, log scale)")
