@@ -2,7 +2,6 @@
 title: "Execution-Aware Short-Horizon Equity Reversal"
 subtitle: "Evidence of Decay, Costs, and Capacity Limits in US Equities (2000--2024)"
 author: "Andrew Zhang"
-date: "This draft: June 29, 2026"
 documentclass: article
 fontsize: 12pt
 geometry: "margin=1.25in"

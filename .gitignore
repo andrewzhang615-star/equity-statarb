@@ -24,7 +24,8 @@ reports/study_guide.md
 reports/interview_pitch.md
 # Stray dated / draft exports of the memo
 reports/*draft*.pdf
-reports/*draft*.docx
+# Word memo is a generated artifact (source = memo.md); keep PDF + md in the repo, not .docx
+reports/*.docx
 
 # OS
 .DS_Store
