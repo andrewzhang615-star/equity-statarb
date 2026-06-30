@@ -19,5 +19,12 @@ reports/figures/*
 !reports/figures/.gitkeep
 !reports/figures/*.png
 
+# Personal / internal docs (kept locally, not part of the public deliverable)
+reports/study_guide.md
+reports/interview_pitch.md
+# Stray dated / draft exports of the memo
+reports/*draft*.pdf
+reports/*draft*.docx
+
 # OS
 .DS_Store
