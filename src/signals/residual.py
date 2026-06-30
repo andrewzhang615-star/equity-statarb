@@ -10,10 +10,6 @@ MVP pipeline (market residual):
 Winsorization (signal input only) is applied before residualizing, so one extreme
 move can't distort either the market proxy or the betas. `returns_full` (realized
 PnL) is never touched.
-
-Stretch pipeline (Avellaneda & Lee 2010): PCA residuals -> cumulative residual
-modeled as an OU process -> s-score with half-life filter. Stubbed below; add only
-after the market- and sector-residual baselines are working end-to-end.
 """
 from __future__ import annotations
 
@@ -119,16 +115,3 @@ def sector_reversal_signal(
     w = winsorize(returns, wcfg["lower"], wcfg["upper"])
     resid = sector_residuals(w, sector, eligible, min_peers=mp)
     return reversal_signal(resid, lookback=rcfg["lookback"], skip=rcfg["skip"], winsor=None)
-
-
-# --------------------------------------------------------------------------- #
-# Stretch (Avellaneda & Lee) — not part of the MVP
-# --------------------------------------------------------------------------- #
-def pca_residuals(returns: pd.DataFrame, n_factors: int, window: int) -> pd.DataFrame:
-    """Return the residual return panel after removing `n_factors` PCs."""
-    raise NotImplementedError
-
-
-def ou_sscore(cum_residual: pd.DataFrame, window: int) -> pd.DataFrame:
-    """Fit OU on each rolling cumulative residual and return the s-score panel."""
-    raise NotImplementedError

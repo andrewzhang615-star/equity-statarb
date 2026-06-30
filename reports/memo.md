@@ -95,7 +95,7 @@ Short-horizon residual reversal was a strong effect in the early 2000s that has 
 
 - Transaction costs are summarized by a flat 7 bps headline assumption, with sensitivity reported over 2--10 bps; the market-impact coefficient is uncertain and is presented as a range. Short-borrow costs are not modeled, which is a material omission given the short-side, low-price concentration of the alpha.
 - Because the analysis uses daily data, it is execution-aware rather than intraday; a natural extension would employ TAQ or limit-order-book data and a path-dependent participation cap.
-- Further extensions include PCA and Ornstein--Uhlenbeck residuals (Avellaneda and Lee, 2010), explicit modeling of borrowing costs, and conditioning on external macroeconomic variables such as the VIX, the slope of the yield curve, and recession indicators.
+- Further extensions include PCA and Ornstein--Uhlenbeck residuals (Avellaneda and Lee, 2010), a longer-horizon momentum tilt and multi-signal blending, explicit modeling of borrowing costs, and conditioning on external macroeconomic variables such as the VIX, the slope of the yield curve, and recession indicators.
 
 # References {-}
 

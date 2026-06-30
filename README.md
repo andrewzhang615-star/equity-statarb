@@ -70,8 +70,8 @@ config.yaml          single source of truth (universe, costs, params, OOS split)
 research_log.md      full dated decision journal + experiment ledger
 src/
   data/    wrds_pull (raw CRSP) · load (leak-safe panels, delisting, eligibility, sectors)
-  signals/ reversal · residual (market + LOO sector) · momentum (stub)
-  portfolio/ construct (locked candidate) · costs
+  signals/ reversal · residual (market + LOO sector)
+  portfolio/ construct (locked candidate)
   backtest/ engine (look-ahead-safe) · metrics (Sharpe/IR/DD/turnover/deflated Sharpe)
   execution/ impact (square-root impact, participation, capacity)
 scripts/   one script per analysis (see Reproduce)

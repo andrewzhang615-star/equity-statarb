@@ -4,8 +4,6 @@
 sector-residual reversal (leave-one-out) -> EWMA smoothing (turnover control) ->
 dollar-neutral, capped weights. Cost-sensitivity, capacity, and the eventual OOS
 run all call this, so the strategy definition lives in exactly one place.
-
-`combine_signals` (stretch) will blend reversal with a momentum tilt.
 """
 from __future__ import annotations
 
@@ -27,8 +25,3 @@ def candidate_weights(
         gross_leverage=pcfg["gross_leverage"], max_weight=pcfg["max_weight"],
         market_neutral=pcfg["market_neutral"],
     )
-
-
-def combine_signals(signals: dict[str, pd.DataFrame], weights: dict[str, float]) -> pd.DataFrame:
-    """Z-score each signal cross-sectionally, then blend by `weights` (stretch)."""
-    raise NotImplementedError

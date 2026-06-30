@@ -1,12 +1,8 @@
 numpy
 pandas
 scipy
-statsmodels
-scikit-learn
 matplotlib
 pyyaml
 pyarrow
 wrds
-jupyter
 pytest
-tqdm

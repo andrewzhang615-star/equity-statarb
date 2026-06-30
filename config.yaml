@@ -28,23 +28,13 @@ delisting:
     codes: [574]                                # 574 = declared insolvent / bankruptcy
 
 residual:
-  method: "market"             # MVP: "market"; stretch: "pca" or "sector_etf"
-  n_factors: 1                 # MVP market residual; increase only for PCA stretch
-  estimation_window: 60        # trading days for residual estimation
+  estimation_window: 60        # trading days for the rolling market-residual beta
   sector_min_peers: 5          # min same-sector peers (excl self) to form a sector residual
-  ou_min_halflife: 1           # days
-  ou_max_halflife: 30          # stretch: only trade names that revert fast enough
 
 signals:
   reversal:
     lookback: 5                # days
     skip: 0
-  momentum:
-    lookback: 252              # ~12 months
-    skip: 21                   # stretch goal; skip recent month
-  s_score:
-    entry: 1.25                # stretch: open when |s| > entry
-    exit: 0.50                 # stretch: close when |s| < exit
   winsorize:                   # cap daily returns for SIGNAL formation ONLY (never PnL)
     lower: -0.20
     upper: 0.20
@@ -54,9 +44,6 @@ portfolio:
   max_weight: 0.02             # per-name cap
   market_neutral: true         # cross-sectionally demean -> dollar neutral
   smoothing_halflife: 5        # EWMA halflife (days) on the signal -> locked turnover control
-  combine_weights:             # MVP: residual reversal only; momentum is stretch
-    residual_reversal: 1.0
-    momentum: 0.0
 
 costs:
   commission_bps: 2.0          # per side
