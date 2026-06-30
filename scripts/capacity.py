@@ -93,6 +93,7 @@ def main() -> None:
         ax.plot(aum_grid / 1e6, curves[e], color=c, label=f"eta={e}")
     ax.axhline(0, color="grey", lw=0.8)
     ax.set_xscale("log")
+    ax.minorticks_off()  # decade ticks only (drop log minor ticks)
     ax.set_xlabel("deployed AUM ($M, log scale)")
     ax.set_ylabel("net Sharpe (in-sample)")
     ax.set_title("Capacity: net Sharpe vs AUM under sqrt impact")
