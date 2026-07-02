@@ -586,3 +586,55 @@ IS 2000-2018 only; diagnostic tests excluded from the DSR candidate count as bef
 announcements (the move can land the NEXT trading day). v1 uses the rdq trading day; a robustness
 variant flagging rdq..rdq+1 is pre-registered HERE (config `signals.earnings.extend: 1`) and may be
 run later without constituting a post-hoc change.
+
+## 2026-07-01 - Layer B Step 1 result: hypothesis SUPPORTED (IS 2000-2018)
+
+Coverage healthy: flagged share ~7.4-7.9% of eligible name-days every year 2000-2018 (close to the
+~8% expected from 4 announcements x 5d windows / 252d) -> conclusions not driven by coverage gaps.
+862,387 rdq rows; 33,324 link rows; point-in-time mapping.
+
+| group               | IC(1d)  | IC(5d)  | gross Sh | breakeven |
+|---------------------|---------|---------|----------|-----------|
+| earnings-in-window  | -0.0105 | -0.0089 | -0.23    | -1.4 bps  |
+| clean               | +0.0125 | +0.0220 |  1.48    | +6.3 bps  |
+
+**Earnings-window moves do not revert -- they DRIFT** (negative reversal IC = PEAD-consistent
+continuation), while clean moves revert better than the unconditional baseline. This is the
+information-vs-liquidity split Phase 2 was designed to test, confirmed with an identifiable
+information event where the volume proxy (Layer A) failed.
+
+**Gate passed -> Step 2 (pre-registered): the exclusion strategy.** Baseline candidate weights with
+earnings-in-window names ineligible for weight, vs the unconditional baseline on identical IS.
+Implementation note: our vectorized engine rebuilds targets daily, so "ineligible for new weight"
+= weight forced to 0 while flagged (forced exit + re-entry turnover). A path-dependent
+hold-but-don't-add variant is a possible refinement, not built in v1. The exclusion strategy is a
+CANDIDATE configuration -> counts in the Phase 2 DSR trial ledger.
+
+## 2026-07-01 - Layer B Step 2 result: exclusion improves the candidate, modestly (IS 2000-2018)
+
+| candidate            | gross Sh | gross ann | turnover | breakeven | net@2 | net@5 | net@7 |
+|----------------------|----------|-----------|----------|-----------|-------|-------|-------|
+| baseline (Phase 1)   | 0.90     | 6.4%      | 0.228    | 11.3 bps  | 0.74  | 0.50  | 0.34  |
+| earnings-excluded    | 1.03     | 7.5%      | 0.265    | 11.2 bps  | 0.85  | 0.57  | 0.39  |
+
+**Reads:**
+1. Removing earnings-window names lifts the gross edge (Sharpe 0.90 -> 1.03; ann +1.1%) --
+   consistent with the Step 1 diagnostic (that slice was actively losing).
+2. The forced exit/re-entry churn materialized exactly as flagged: turnover +16% (0.228 -> 0.265).
+   Mean-return gain and turnover gain offset almost exactly -> **breakeven unchanged (11.3 -> 11.2)**.
+3. Net Sharpe still improves at every cost level (net@7 0.34 -> 0.39) because the strategy earns
+   more per unit time at similar vol; but the improvement (+0.05 net) is well inside statistical
+   noise for a 19y sample -- report as hypothesis-consistent, not as proof.
+4. Phase 1's headline conclusion is NOT overturned: the strategy remains execution-dependent
+   (breakeven ~11 bps, unchanged).
+
+Possible refinement (NOT built; path-dependent): hold-but-don't-add during earnings windows could
+keep the gross gain without the forced round-trips. Would be a new pre-registered candidate.
+
+**DSR trial ledger (Phase 2 candidates): #1 earnings-excluded candidate.** (Layer A produced no
+candidate; diagnostics excluded from count.)
+
+| Date | Layer / variant | Params | IS result | Notes |
+|------|-----------------|--------|-----------|-------|
+| 2026-07-01 | B: earnings-in-window flag (diagnostic) | rdq PIT-linked, 5d window | flagged IC(1d) -0.0105 vs clean +0.0125 | gate PASSED |
+| 2026-07-01 | B: earnings-excluded candidate | baseline + flag-ineligible | gross 1.03 / net@7 0.39 | CANDIDATE #1; breakeven flat |

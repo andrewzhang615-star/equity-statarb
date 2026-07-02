@@ -100,6 +100,13 @@ def test_candidate_weights_runs_and_dollar_neutral():
     w = candidate_weights(returns, eligible, sector, cfg)
     assert abs(w.iloc[-1].sum()) < 1e-9  # dollar-neutral after warmup
 
+    # weight_eligible masks weights (name 1 forced to 0) without changing the signal path
+    wexcl = eligible.copy()
+    wexcl[1] = False
+    w2 = candidate_weights(returns, eligible, sector, cfg, weight_eligible=wexcl)
+    assert (w2[1] == 0).all()
+    assert abs(w2.iloc[-1].sum()) < 1e-9  # still dollar-neutral over the reduced set
+
 
 def test_ewma_smooth_identity_and_smoothing():
     dates = pd.date_range("2020-01-01", periods=10, freq="D")
