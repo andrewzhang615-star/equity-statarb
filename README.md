@@ -1,6 +1,8 @@
 # Execution-Aware Short-Horizon Equity Reversal
 ### Evidence of decay, costs, and capacity limits (US equities, 2000–2024)
 
+![tests](https://github.com/andrewzhang615-star/equity-statarb/actions/workflows/ci.yml/badge.svg)
+
 **Does short-horizon residual reversal in US equities still survive realistic execution?**
 This repo answers that with a leak-safe CRSP backtest, building from a raw reversal baseline
 up to a sector-residual, turnover-controlled strategy, then stress-testing it for costs,

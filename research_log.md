@@ -459,3 +459,47 @@ frozen spec, and a true one-shot holdout. Files: reports/oos_summary.txt, report
 | 2026-06-27 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
 | 2026-06-27 | sector-residual 5d reversal (LOO) | 2-digit SIC, eligible peers ≥5, point-in-time | 1.22 gross / -0.33 net | sealed | **breakeven 5.5bps**; gross maxDD -8.2%; turnover pinned 0.64 |
 | 2026-06-27 | sector-resid + EWMA smooth hl=5 | turnover control | 0.90 gross / **+0.34 net** | sealed | **breakeven 11.3bps**; turnover 0.64→0.23; FIRST net-positive (IS, tuned) |
+
+---
+
+# PHASE 2 — Conditioning reversal on information proxies
+
+## 2026-07-01 - Phase 2 pre-registration (written BEFORE any Phase 2 result)
+
+**Phase 1 is frozen.** Its answer stands: classic residual reversal decayed below realistic costs.
+Phase 2 is a new iteration motivated by course-mentor feedback (add layers: volume/news interaction,
+earnings exclusion, latent-factor residualization).
+
+**Phase 2 question:** can we identify the subset of reversal opportunities that are temporary
+*liquidity dislocations* rather than *information-driven* moves? (Directly tests the Phase 1
+liquidity-provision interpretation.)
+
+**Methodology rules (pre-registered):**
+1. All development on IS 2000-2018 ONLY.
+2. 2019-2024 is a **spent** holdout (unsealed in Phase 1) -> may be reported only as a labeled
+   "prior holdout" sanity check, never as fresh evidence.
+3. A NEW holdout (2025 -> latest available CRSP) will be pulled and SEALED before any Phase 2
+   result is produced. The final layered candidate is evaluated on it exactly once.
+4. New experiment ledger below; every variant logged; trial count feeds the Phase 2 deflated Sharpe.
+5. Layers in order: (A) volume conditioning, (B) earnings exclusion, (C) PCA/latent-factor
+   residualization. News only if a clean source materializes; otherwise volume+earnings are the
+   information-event proxies.
+
+**Layer A design (for review before build) — volume-conditioned reversal:**
+- Hypothesis: a residual move on abnormally LOW volume is more likely temporary (liquidity-driven)
+  and should revert more; a high-volume move is more likely informed. (Lo-MacKinlay uninformed-
+  trading story; also the course's "uninformed trading" guidance.)
+- Abnormal volume AV_{i,t} = mean dollar volume over the 5d signal window (t-4..t, known at close t)
+  / trailing 60d mean dollar volume ending t-5 (no overlap). Same timing as the return signal; no
+  extra look-ahead concerns.
+- Step 1 (diagnostic FIRST): tercile the cross-section by AV daily; report reversal IC and
+  gross/breakeven by tercile on IS. If low-AV shows no edge advantage, the layer stops there.
+- Step 2 (pre-registered variants, only if step 1 supports): (a) hard filter — trade only
+  below-median-AV names; (b) continuous downweight — scale signal by (1 - cross-sectional AV rank).
+- Metrics: gross/net Sharpe, breakeven, turnover vs the Phase 1 locked candidate on identical IS.
+
+## Phase 2 experiment ledger
+
+| Date | Layer / variant | Params | IS result | Notes |
+|------|-----------------|--------|-----------|-------|
+| | | | | |
