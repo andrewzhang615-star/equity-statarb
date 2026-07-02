@@ -683,3 +683,33 @@ DSR candidate ledger additions when run: #2 PCA(k=15) candidate; (#3 final combi
 3. **Implementation:** economy SVD on the standardized T x N window (T=252 < N~1000) rather than
    forming the N x N correlation matrix -- cheaper and numerically more stable; right singular
    vectors = correlation eigenvectors.
+
+## 2026-07-01 - Layer C result: PCA(k=15) beats sector-LOO on the pre-registered metric (IS, common dates)
+
+Diagnostics healthy: 288 estimations, ~963 names/window, 99.8% avg coverage, var explained (k=15)
+avg 51.5% (inside the expected 50-60%). Common window 2000-12-29..2018 (PCA warmup excludes most of
+2000 -- note the baseline is weaker here than full-IS [net@7 0.14 vs 0.34] because 2000, the
+strongest year, drops out; decay visible again).
+
+| candidate (common dates) | gross Sh | ann  | turnover | breakeven | net@2 | net@5 | net@7 |
+|--------------------------|----------|------|----------|-----------|-------|-------|-------|
+| sector-LOO (baseline)    | 0.80     | 4.8% | 0.228    | 8.5 bps   | 0.61  | 0.33  | 0.14  |
+| **PCA k=15 (candidate)** | **1.22** | 5.2% | 0.228    | 8.9 bps   | 0.94  | 0.53  | **0.26** |
+| PCA k=5  (sensitivity)   | 0.97     | 4.6% | 0.227    | 8.1 bps   | 0.73  | 0.37  | 0.13  |
+| PCA k=30 (sensitivity)   | 1.22     | 5.0% | 0.228    | 8.6 bps   | 0.94  | 0.51  | 0.23  |
+
+**Decision per the pre-registered rule:** PCA(k=15) improves the headline metric (net@7 0.26 vs
+0.14) -> the final combined candidate is **PCA(k=15) + earnings exclusion**.
+
+Reads: (1) PCA's main gift is RISK control -- vol 6.0% -> 4.3% (15 statistical factors hedge far
+more co-movement than one sector demean) with slightly higher return; breakeven only modestly
+better (8.5 -> 8.9), so the cost frontier story is intact. (2) The k-sensitivity is reassuringly
+smooth (k=5 too few; k=15~k=30 plateau) -- primary not a knife-edge, and no selection temptation
+arose. (3) Turnover identical across residual methods.
+
+DSR candidate ledger: #2 PCA(k=15) candidate. Next: #3 final combined (PCA + earnings exclusion).
+
+| Date | Layer / variant | Params | IS result | Notes |
+|------|-----------------|--------|-----------|-------|
+| 2026-07-01 | C: PCA k=15 candidate | 252d, re-est 21d, corr-SVD | gross 1.22 / net@7 0.26 (common dates) | CANDIDATE #2; beats sector-LOO 0.14 |
+| 2026-07-01 | C: PCA k=5 / k=30 | sensitivity only | net@7 0.13 / 0.23 | no selection from these |
