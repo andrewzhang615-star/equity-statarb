@@ -234,6 +234,20 @@ def load_sector(config: dict | None = None) -> pd.DataFrame:
     return pd.read_parquet(path) if path.exists() else build_sector_panel(config)
 
 
+def dollar_volume_panel(config: dict | None = None) -> pd.DataFrame:
+    """Raw daily dollar-volume panel (dates x permno): |prc| * vol, unlagged.
+
+    Callers own the timing (e.g. abnormal_volume builds non-overlapping windows;
+    anything used for sizing should be lagged by its consumer).
+    """
+    cfg = config or CONFIG
+    dcfg = cfg["data"]
+    daily = pd.read_parquet(ROOT / dcfg["raw_path"], columns=["permno", "date", "prc", "vol"])
+    _check_unique_permno_date(daily)
+    daily["dvol"] = daily["prc"].abs() * daily["vol"]
+    return daily.pivot(index="date", columns="permno", values="dvol")
+
+
 def advdollar_panel(config: dict | None = None) -> pd.DataFrame:
     """Trailing average-dollar-volume panel (dates x permno), lagged one day.
 

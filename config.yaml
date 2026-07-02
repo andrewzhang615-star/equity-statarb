@@ -38,6 +38,10 @@ signals:
   winsorize:                   # cap daily returns for SIGNAL formation ONLY (never PnL)
     lower: -0.20
     upper: 0.20
+  volume:                      # Phase 2 Layer A: abnormal volume over the signal window
+    window: 5                  # matches the reversal lookback
+    base_window: 60            # trailing base, shifted so it never overlaps the window
+    min_base: 30
 
 portfolio:
   gross_leverage: 1.0

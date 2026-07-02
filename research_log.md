@@ -503,3 +503,53 @@ liquidity-provision interpretation.)
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
 | | | | | |
+
+## 2026-07-01 - Pre-registration amendment: fresh holdout NOT yet available
+
+The 2025+ holdout pull returned data only through **2024-12-31** (CRSP on WRDS is on its
+annual/lagged update cycle; 2025 vintages not yet posted). The p2holdout files were verified to be a
+strict subset of the existing 2000-2024 pull and deleted. Status:
+
+- **No fresh sealed holdout exists yet.** Rule 3 of the pre-registration is pending, not satisfied.
+- Phase 2 development proceeds on IS 2000-2018 only. 2019-2024 may appear ONLY as a labeled
+  "spent prior holdout" sanity check.
+- Action item: re-run the holdout pull when CRSP posts 2025 data; seal it before any final
+  Phase 2 evaluation.
+
+## 2026-07-01 - Layer A Step 1 result: hypothesis NOT supported (IS 2000-2018)
+
+Reversal by abnormal-volume (AV) tercile, sector-residual 5d signal, ~878 valid names/day:
+
+| tercile | IC(1d) | t    | IC(5d) | t    | gross Sh | turnover | breakeven |
+|---------|--------|------|--------|------|----------|----------|-----------|
+| low AV  | +0.0074 |  4.0 | +0.0190 | 11.0 | 0.96 | 0.879 | 3.5 bps |
+| mid AV  | +0.0101 |  5.4 | +0.0189 | 10.7 | 1.05 | 1.025 | 3.0 bps |
+| high AV | +0.0130 |  7.6 | +0.0182 | 11.0 | 1.16 | 0.718 | 5.0 bps |
+
+**Findings:**
+1. **In this large/liquid top-1000 universe, volume alone did not isolate the low-information
+   reversal opportunities we hoped for.** At the 1d horizon the gradient runs the other way:
+   reversal is monotonically stronger after HIGH-volume moves (IC 0.0074 -> 0.0130), consistent
+   with liquidity-demand / market-maker-inventory stories in liquid stocks (Campbell-Grossman-Wang
+   1993; Llorente-Michaely-Saar-Wang 2002 predict exactly this for large, low-information-asymmetry
+   names). The low-volume intuition may still hold in other settings -- small caps, genuinely
+   news-filtered returns, or intraday data -- which volume alone cannot proxy here.
+2. **At the 5d horizon the IC is FLAT across terciles** (~0.019 everywhere) -> the volume
+   interaction lives at ~1 day, shorter than our strategy's effective holding (EWMA hl=5).
+3. **No tercile beats the unconditional strategy's 5.5 bps breakeven** (3.5/3.0/5.0): restricting
+   to a third of names adds tercile-membership churn (turnover 0.72-1.03 vs 0.64) and cuts breadth.
+
+**Decision per pre-registration:** the low-AV variants are NOT built (hypothesis unsupported). A
+flipped high-AV tilt would be a post-hoc, data-derived hypothesis; given the flat 5d IC and no
+breakeven improvement, we do NOT build it either. Layer A closes with a real finding: in liquid
+large caps at a multi-day horizon, volume conditioning does not add net value; the 1d high-volume
+reversal gradient is real but not exploitable at our rebalance profile. -> Proceed to Layer B
+(earnings exclusion), which targets information events directly instead of via volume.
+
+Trial accounting: these are DIAGNOSTIC tests, recorded in the ledger for transparency but
+excluded from the deflated-Sharpe candidate count -- no strategy was selected from them. Only
+candidate strategy configurations enter the DSR trial count.
+
+| Date | Layer / variant | Params | IS result | Notes |
+|------|-----------------|--------|-----------|-------|
+| 2026-07-01 | A: AV terciles (diagnostic) | AV=5d/60d $vol, terciles | high-AV IC(1d) 0.0130 > low 0.0074; 5d flat | hypothesis rejected; no variant built |
