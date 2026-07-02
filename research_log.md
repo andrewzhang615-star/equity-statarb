@@ -638,3 +638,32 @@ candidate; diagnostics excluded from count.)
 |------|-----------------|--------|-----------|-------|
 | 2026-07-01 | B: earnings-in-window flag (diagnostic) | rdq PIT-linked, 5d window | flagged IC(1d) -0.0105 vs clean +0.0125 | gate PASSED |
 | 2026-07-01 | B: earnings-excluded candidate | baseline + flag-ineligible | gross 1.03 / net@7 0.39 | CANDIDATE #1; breakeven flat |
+
+## 2026-07-01 - Layer C pre-registration: PCA/latent-factor residualization (spec before code)
+
+**Hypothesis:** statistical factors estimated from the return panel capture co-movement beyond
+market + 2-digit sector (styles, hidden clusters), producing a cleaner idiosyncratic residual and
+therefore a stronger reversal signal (Avellaneda & Lee 2010).
+
+**Estimation design (pre-registered):**
+- Correlation-based PCA: winsorized (signal-input) returns standardized per name by trailing
+  window std, so high-vol names don't dominate the factors.
+- Rolling window 252 trading days; names require >= 60% non-missing coverage in-window (missing
+  standardized returns set to 0 for estimation and projection); estimation universe = eligible.
+- **Re-estimated every 21 trading days** (compute tractability); loadings applied forward until the
+  next estimation. Loadings at estimation date t0 use returns through t0 (same-day contemporaneous
+  use, consistent with the sector-LOO convention); days t0+1..t0+21 use stale loadings (no
+  look-ahead).
+- Residual (eigenvectors orthonormal): resid_std = (I - Lambda Lambda') R_std, de-standardized by
+  each name's window std. Feed into the same 5d reversal + baseline construction.
+- **Factor count: k = 15 is THE primary candidate** (Avellaneda-Lee ballpark; expect ~50-60%
+  variance explained -- reported as a sanity diagnostic). k = 5 and k = 30 are reported as
+  SENSITIVITY ONLY: selection will NOT be based on them; if the primary fails but a sensitivity
+  succeeds, we do NOT switch. This keeps the DSR selection count honest.
+
+**Comparison (identical IS, baseline construction -- no earnings exclusion yet):**
+sector-LOO residual (Phase 1) vs PCA(k=15) residual: gross/net Sharpe, breakeven, turnover.
+**Final combined candidate** (whichever residual wins + earnings exclusion) is evaluated last and
+enters the DSR ledger as its own candidate.
+
+DSR candidate ledger additions when run: #2 PCA(k=15) candidate; (#3 final combined candidate).
