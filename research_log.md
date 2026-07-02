@@ -667,3 +667,19 @@ sector-LOO residual (Phase 1) vs PCA(k=15) residual: gross/net Sharpe, breakeven
 enters the DSR ledger as its own candidate.
 
 DSR candidate ledger additions when run: #2 PCA(k=15) candidate; (#3 final combined candidate).
+
+**Amendment (pre-build, per review):**
+1. **Explicit decision rule** (replaces "whichever residual wins"): evaluate PCA(k=15) against
+   sector-LOO on the pre-specified headline metric = **net Sharpe @ 7 bps on common valid dates**
+   (PCA needs a 252d warmup, so both candidates are compared only on dates where the PCA residual
+   exists; breakeven and gross reported alongside). If PCA(k=15) improves it, the final combined
+   candidate is PCA(k=15) + earnings exclusion; otherwise it remains sector-LOO + earnings
+   exclusion. No other selection between the two.
+2. **Missing-data transparency:** "missing standardized return -> 0" means missing is treated as a
+   NEUTRAL (mean) return in correlation/factor estimation -- defensible matrix completion, but
+   biased if missingness is nonrandom. The run must report per-estimation coverage: names retained
+   per PCA window and average in-window coverage. Names failing the 60% rule get NaN residuals
+   (no signal), never fabricated ones.
+3. **Implementation:** economy SVD on the standardized T x N window (T=252 < N~1000) rather than
+   forming the N x N correlation matrix -- cheaper and numerically more stable; right singular
+   vectors = correlation eigenvectors.
