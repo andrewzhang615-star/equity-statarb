@@ -553,3 +553,31 @@ candidate strategy configurations enter the DSR trial count.
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
 | 2026-07-01 | A: AV terciles (diagnostic) | AV=5d/60d $vol, terciles | high-AV IC(1d) 0.0130 > low 0.0074; 5d flat | hypothesis rejected; no variant built |
+
+## 2026-07-01 - Layer B pre-registration: earnings exclusion (written BEFORE any earnings data pulled)
+
+**Motivation (sharpened by Layer A):** volume failed to isolate information events in large caps,
+so target identifiable information events directly. Earnings-announcement moves are information-
+driven and tend to DRIFT (PEAD), not revert -- a reversal signal formed from an earnings-window
+move is fighting momentum.
+
+**Hypothesis:** excluding names whose signal window contains an earnings announcement raises the
+mean edge per trade (breakeven) of the remaining book.
+
+**Data:** Compustat quarterly report dates (`comp.fundq.rdq`) via WRDS, mapped gvkey->permno with
+the CRSP/Compustat link table (`crsp.ccmxpf_lnkhist`), honoring link-date ranges and primary link
+types (LU/LC, linkprim P/C). Coverage by year must be reported (rdq is sparse early-sample).
+
+**Timing rule (no look-ahead):** only PAST announcements are used -- a name is flagged on day t if
+an rdq falls in its signal lookback window (t-4 .. t), i.e. "the move I would fade contains an
+earnings event." No pre-announcement blackout in v1 (that requires an ex-ante calendar; noted as a
+possible variant using expected-next-rdq, NOT built unless pre-registered later).
+
+**Step 1 (diagnostic FIRST):** split signal name-days into "earnings-in-window" vs "clean";
+report reversal IC (1d, 5d) and gross/breakeven for each group, plus the earnings-in-window share
+of names/day. If earnings-window reversal is NOT materially weaker, the layer stops there.
+**Step 2 (only if step 1 supports):** the exclusion strategy -- baseline candidate weights with
+earnings-in-window names ineligible for NEW weight -- vs the unconditional baseline on identical
+IS. Metrics: gross/net Sharpe, breakeven, turnover.
+
+IS 2000-2018 only; diagnostic tests excluded from the DSR candidate count as before.
