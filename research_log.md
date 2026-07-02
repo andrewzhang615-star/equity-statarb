@@ -581,3 +581,8 @@ earnings-in-window names ineligible for NEW weight -- vs the unconditional basel
 IS. Metrics: gross/net Sharpe, breakeven, turnover.
 
 IS 2000-2018 only; diagnostic tests excluded from the DSR candidate count as before.
+
+**Amendment (pre-registered before any earnings data):** daily rdq imperfectly times after-close
+announcements (the move can land the NEXT trading day). v1 uses the rdq trading day; a robustness
+variant flagging rdq..rdq+1 is pre-registered HERE (config `signals.earnings.extend: 1`) and may be
+run later without constituting a post-hoc change.

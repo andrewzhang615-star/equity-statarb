@@ -15,6 +15,8 @@ data:
   returns_full_path: "data/processed/returns_full.parquet"  # PnL panel — NEVER masked
   eligible_path: "data/processed/eligible.parquet"          # tradability mask — weights only
   sector_path: "data/processed/sector.parquet"              # point-in-time 2-digit SIC panel
+  earnings_path: "data/raw/comp_rdq.parquet"                # raw Compustat quarterly rdq
+  ccm_link_path: "data/raw/ccm_link.parquet"                # raw CRSP/Compustat link history
 
 delisting:
   # Imputation for MISSING delisting returns, applied at panel-build time
@@ -42,6 +44,9 @@ signals:
     window: 5                  # matches the reversal lookback
     base_window: 60            # trailing base, shifted so it never overlaps the window
     min_base: 30
+  earnings:                    # Phase 2 Layer B: earnings-in-signal-window flag
+    window: 5                  # matches the reversal lookback (PAST announcements only)
+    extend: 0                  # v1; 1 = rdq..rdq+1 after-close robustness (pre-registered)
 
 portfolio:
   gross_leverage: 1.0
