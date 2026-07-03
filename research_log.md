@@ -742,3 +742,31 @@ Sharpe over 3 candidates, fresh 2025+ holdout when CRSP posts it, memo/README Ph
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
 | 2026-07-01 | FINAL: PCA k=15 + earn-excl | combined | gross 1.37 / net@7 0.28 (common dates) | CANDIDATE #3 |
+
+## 2026-07-01 - Phase 2 endgame: spent-holdout sanity check + deflated Sharpe
+
+FINAL candidate (PCA k=15 + earnings exclusion):
+
+| period                              | gross Sh | ann   | breakeven | net@2 | net@5 | net@7 | maxDD@7 |
+|-------------------------------------|----------|-------|-----------|-------|-------|-------|---------|
+| IS 2000-2018 (development)          | 1.37     | 5.9%  | 8.8 bps   | 1.06  | 0.59  | 0.28  | -16.7%  |
+| **2019-2024 [SPENT - sanity only]** | **-0.07** | -1.0% | -0.9 bps  | -0.24 | -0.48 | -0.64 | -31.2%  |
+
+Phase 2 deflated Sharpe (IS net@7, 3 candidates): **P(true Sharpe>0 | selection) = 0.83**.
+
+**Reads (the honest ones):**
+1. **The decay conclusion is brutally confirmed.** On 2019-2024 the final candidate has NO gross
+   edge at all (-0.07) -- worse than the Phase 1 candidate's 0.23 on the same window, though the
+   difference over ~6 noisy years is itself within noise. No amount of cleaner residualization or
+   event filtering resurrects an edge that is gone: Phase 2's IS gains did not transfer.
+2. **A teaching moment on DSR:** the Phase 2 deflated Sharpe (0.83) is far healthier than Phase 1's
+   (0.20) -- few candidates, disciplined selection -- yet the strategy still fails the recent
+   period. DSR corrects for SELECTION among counted trials; it cannot correct for REGIME DECAY.
+   In-sample statistical solidity is necessary, not sufficient.
+3. Caveat in both directions: 2019-2024 is a spent window (unsealed in Phase 1; Phase 2 layers were
+   chosen knowing how reversal behaved through it), so this is a labeled sanity check -- but its
+   message is consistent with every subperiod diagnostic since Phase 1. The honest final exam is
+   the 2025+ vintage, still pending CRSP's release.
+
+**Phase 2 development is CLOSED.** Remaining: memo/README Phase 2 section; fresh-holdout one-shot
+when 2025 data ships.
