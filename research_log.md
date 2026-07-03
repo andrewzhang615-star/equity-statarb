@@ -713,3 +713,32 @@ DSR candidate ledger: #2 PCA(k=15) candidate. Next: #3 final combined (PCA + ear
 |------|-----------------|--------|-----------|-------|
 | 2026-07-01 | C: PCA k=15 candidate | 252d, re-est 21d, corr-SVD | gross 1.22 / net@7 0.26 (common dates) | CANDIDATE #2; beats sector-LOO 0.14 |
 | 2026-07-01 | C: PCA k=5 / k=30 | sensitivity only | net@7 0.13 / 0.23 | no selection from these |
+
+## 2026-07-01 - Phase 2 final combined candidate (IS, common dates 2000-12-29..2018)
+
+| candidate                    | gross Sh | ann  | turnover | breakeven | net@2 | net@5 | net@7 |
+|------------------------------|----------|------|----------|-----------|-------|-------|-------|
+| sector-LOO (Phase 1)         | 0.80     | 4.8% | 0.228    | 8.5 bps   | 0.61  | 0.33  | 0.14  |
+| sector-LOO + earn-excl       | 0.92     | 5.6% | 0.266    | 8.5 bps   | 0.70  | 0.38  | 0.16  |
+| PCA k=15                     | 1.22     | 5.2% | 0.228    | 8.9 bps   | 0.94  | 0.53  | 0.26  |
+| **PCA k=15 + earn-excl (FINAL)** | **1.37** | 5.9% | 0.266  | 8.8 bps   | 1.06  | 0.59  | **0.28** |
+
+**Reads:**
+1. **The two layers are additive and near-independent:** earnings exclusion adds ~+0.12-0.15 gross
+   Sharpe on either residual; PCA adds ~+0.42-0.45 on either exclusion state. Clean attribution.
+2. **FINAL vs Phase 1 baseline (common dates): gross 0.80 -> 1.37, net@7 0.14 -> 0.28.** Phase 2
+   delivered a materially better strategy on IS.
+3. **The cost frontier is unchanged all the way through** (breakeven 8.5 -> 8.8 bps): Phase 2
+   improved risk-adjusted quality (mostly vol reduction + removing losing trades), NOT the
+   per-trade edge. Phase 1's execution-dependence conclusion stands fully.
+4. Honest note: on top of PCA, the earnings layer's NET add at 7 bps is small (+0.02, inside
+   noise); its contribution is clearer gross and at low costs (+0.12 at 2 bps) because the forced
+   exit/re-entry churn (turnover 0.228 -> 0.266) offsets it at higher costs.
+
+**DSR candidate ledger: #3 FINAL = PCA(k=15) + earnings exclusion.** Phase 2 development complete;
+3 candidates total. Endgame: labeled spent-holdout (2019-2024) sanity check, Phase 2 deflated
+Sharpe over 3 candidates, fresh 2025+ holdout when CRSP posts it, memo/README Phase 2 section.
+
+| Date | Layer / variant | Params | IS result | Notes |
+|------|-----------------|--------|-----------|-------|
+| 2026-07-01 | FINAL: PCA k=15 + earn-excl | combined | gross 1.37 / net@7 0.28 (common dates) | CANDIDATE #3 |
