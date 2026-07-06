@@ -28,11 +28,21 @@ from src.backtest import engine, metrics
 from src.config import CONFIG, ROOT
 from src.data.load import advdollar_panel, load_eligible, load_returns_full, load_sector
 from src.execution.impact import participation_stats, sqrt_impact_base
+from src.plotstyle import COLORS, apply_style
 from src.portfolio.construct import candidate_weights
 from src.signals.reversal import winsorize
 
+apply_style()
+
 ETA = 0.6  # mid impact scenario for the cap comparison
 CAPS = [None, 0.05, 0.10, 0.25]
+CAP_COLORS = {
+    None: COLORS["primary"],
+    0.05: COLORS["secondary"],
+    0.10: COLORS["accent"],
+    0.25: COLORS["accent2"],
+}
+FIGSIZE = (6.0, 4.0)
 
 
 def net_sharpe_and_tail(w_use, returns, vol, adv, aum, floor_bps, is_mask):
@@ -83,19 +93,19 @@ def main() -> None:
     for i, aum in enumerate(aum_grid):
         print(f"  ${aum/1e6:7.0f}M  " + "  ".join(f"{tails[c][i]*100:8.1f}%" for c in CAPS))
 
-    fig, ax = plt.subplots(figsize=(7, 4.5))
+    fig, ax = plt.subplots(figsize=FIGSIZE)
     for c in CAPS:
-        ax.plot(aum_grid / 1e6, sharpes[c], marker="o", label=label(c))
-    ax.axhline(0, color="grey", lw=0.8)
+        ax.plot(aum_grid / 1e6, sharpes[c], color=CAP_COLORS[c], lw=1.3, label=label(c))
+    ax.axhline(0, color=COLORS["muted"], lw=0.8)
     ax.set_xscale("log")
-    ax.set_xlabel("deployed AUM ($M, log scale)")
-    ax.set_ylabel(f"net Sharpe (IS, eta={ETA})")
-    ax.set_title("Capacity with position cap (cap = % of ADV held)")
-    ax.legend()
+    ax.set_xlabel("Deployed AUM ($M, log scale)")
+    ax.set_ylabel(fr"Net Sharpe ($\eta={ETA}$)")
+    ax.set_title("Position-cap capacity comparison")
+    ax.legend(loc="lower left")
     out = ROOT / "reports/figures/participation_cap.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
-    fig.savefig(out, dpi=120)
+    fig.savefig(out, dpi=150)
     print(f"\nsaved {out}")
 
 

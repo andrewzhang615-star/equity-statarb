@@ -8,6 +8,14 @@ from __future__ import annotations
 
 import matplotlib as mpl
 
+COLORS = {
+    "primary": "#111111",
+    "secondary": "#5f5f5f",
+    "muted": "#8a8a8a",
+    "accent": "#b22222",
+    "accent2": "#2f5d8c",
+}
+
 
 def apply_style() -> None:
     mpl.rcParams.update({
@@ -20,6 +28,7 @@ def apply_style() -> None:
         "ytick.labelsize": 9,
         "legend.fontsize": 9,
         "legend.frameon": False,
+        "legend.handlelength": 2.6,
         "axes.spines.top": False,
         "axes.spines.right": False,
         "axes.grid": False,
