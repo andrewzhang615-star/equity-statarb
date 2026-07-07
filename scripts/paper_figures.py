@@ -200,7 +200,7 @@ def fig_oos_equity(returns, eligible, sector, cfg) -> None:
 
     fig, ax = plt.subplots(figsize=FIGSIZE)
     ax.plot(eq.index, eq.values, color=COLORS["primary"], lw=1.0)
-    ax.axvline(oos, color=COLORS["muted"], ls=":", lw=1.1, label=f"OOS start ({oos.date()})")
+    ax.axvline(oos, color=COLORS["muted"], ls=":", lw=1.1)
     ax.set_yscale("log")
     yticks = np.arange(0.9, 1.8, 0.1)
     ax.set_yticks(yticks)
@@ -209,7 +209,11 @@ def fig_oos_equity(returns, eligible, sector, cfg) -> None:
     ax.set_xlabel("Date")
     ax.set_ylabel("Net equity (log scale)")
     ax.set_title("Net equity at 7 bps cost")
-    ax.legend(loc="upper left")
+    ax.text(
+        oos + pd.DateOffset(months=3), 0.97, "OOS start",
+        transform=ax.get_xaxis_transform(),
+        color=COLORS["secondary"], fontsize=9, ha="left", va="top",
+    )
     _finish(fig, ax, "oos_equity.png")
 
 
