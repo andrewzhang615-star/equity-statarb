@@ -111,7 +111,7 @@ Coverage: 6,289 days x ~971 tradable names/day (stable). **Data gate: PASS.**
 
 ---
 
-## 2026-06-27 - Result: raw 5-day reversal (IN-SAMPLE 2000-2018)
+## 2026-06-28 - Result: raw 5-day reversal (IN-SAMPLE 2000-2018)
 
 Dollar-neutral, ~969 names/day, signal winsorized +/-20%, eligibility = prior-close >= $5, 7 bps/unit turnover.
 
@@ -127,7 +127,7 @@ clear breakeven? Plus a lower-turnover variant (longer lookback / holding / sign
 
 ---
 
-## 2026-06-27 - Market-residual reversal vs raw (IS 2000-2018)
+## 2026-06-28 - Market-residual reversal vs raw (IS 2000-2018)
 
 Market residualization (`resid = ret - rolling-beta * mkt`, mkt = EW mean of the **eligible/tradable**
 universe) lifted **gross** Sharpe 0.67 -> 1.00: vol fell 10.5% -> 8.0% AND gross ann return rose
@@ -143,7 +143,7 @@ neutralization (mean edge) and turnover reduction (no-trade bands, smoothing, lo
 
 ---
 
-## 2026-06-27 - Sector-residual reversal (leave-one-out), IS 2000-2018
+## 2026-06-28 - Sector-residual reversal (leave-one-out), IS 2000-2018
 
 Three-step progression (5d reversal, $-neutral, IS 2000-2018, 7 bps assumed):
 
@@ -165,7 +165,7 @@ cost-sensitivity + capacity analysis.
 
 ---
 
-## 2026-06-27 - Turnover reduction: strategy crosses to net-positive (IS 2000-2018)
+## 2026-06-28 - Turnover reduction: strategy crosses to net-positive (IS 2000-2018)
 
 Sweep on the sector-residual signal (7 bps assumed):
 
@@ -191,7 +191,7 @@ CAVEATS (do not over-claim): IS-only; halflife is a TUNED knob (best of sweep); 
 
 ---
 
-## 2026-06-27 - Cost sensitivity (locked candidate, IS 2000-2018)
+## 2026-06-28 - Cost sensitivity (locked candidate, IS 2000-2018)
 
 Net Sharpe vs assumed per-turnover cost for sector-residual + EWMA hl=5 (turnover 0.228/day):
 
@@ -206,7 +206,7 @@ margin. Next: capacity (does the edge survive at scale once our own trades move 
 
 ---
 
-## 2026-06-27 - Capacity (locked candidate, IS 2000-2018)
+## 2026-06-28 - Capacity (locked candidate, IS 2000-2018)
 
 Square-root impact on top of the 7 bps floor; net Sharpe vs AUM (eta = impact coeff):
 
@@ -227,7 +227,7 @@ which is precisely why it persists (can't be scaled away). Honest, strong narrat
 
 ---
 
-## 2026-06-27 - Robustness: subperiod DECAY + leg attribution (IS)
+## 2026-06-28 - Robustness: subperiod DECAY + leg attribution (IS)
 
 Subperiod stability (locked candidate, 7 bps):
 
@@ -255,7 +255,7 @@ market drift). Needs beta-adjusted legs to be conclusive.
 
 ---
 
-## 2026-06-27 - Robustness round 2: subperiod x cost + beta-adjusted legs (IS)
+## 2026-06-28 - Robustness round 2: subperiod x cost + beta-adjusted legs (IS)
 
 Subperiod net Sharpe at 2/5/7/10 bps:
 
@@ -283,7 +283,7 @@ and flags an UNMODELED cost: short borrow/constraints (document as a caveat; do 
 
 ---
 
-## 2026-06-27 - Robustness: liquidity buckets (IS, top 500/1000/1500)
+## 2026-06-28 - Robustness: liquidity buckets (IS, top 500/1000/1500)
 
 Locked candidate restricted to top-N by dollar volume (both traded universe AND sector peer set), 7 bps:
 
@@ -303,7 +303,7 @@ flag top-500 as a viable higher-capacity variant for the writeup.
 
 ---
 
-## 2026-06-27 - Participation (position) cap (IS, eta=0.6)
+## 2026-06-28 - Participation (position) cap (IS, eta=0.6)
 
 Capped each name's position to cap_frac of its ADV$ (|w| <= cap_frac*ADV$/AUM, re-neutralized over TRADED
 names), re-ran capacity. (Bug found & fixed first: a blanket re-neutralization leaked weight onto zero-ADV
@@ -332,7 +332,7 @@ execution-dependent, short-side alpha that decayed over time. Capping = risk con
 
 ---
 
-## 2026-06-27 - Diagnostics: IC decay + macro/regime conditioning (IS)
+## 2026-06-28 - Diagnostics: IC decay + macro/regime conditioning (IS)
 
 (1) Rank-IC of the (pre-EWMA) sector-residual reversal signal vs forward CUMULATIVE residual returns:
 
@@ -358,7 +358,7 @@ net beta (+0.12) but too large to be only that -> genuine regime dependence. Hon
 
 ---
 
-## 2026-06-27 - Diagnostics 2: PnL attribution + short-side + crash episodes (IS)
+## 2026-06-28 - Diagnostics 2: PnL attribution + short-side + crash episodes (IS)
 
 (a) Concentration -- BROAD, not a few-name artifact:
 - top-10 names 8.3% of gross PnL, top-50 30.5%; 2356 names net-positive vs 1484 negative.
@@ -386,7 +386,7 @@ months were rallies). Precise, defensible interview narrative.
 
 ---
 
-## === FINAL STRATEGY SPECIFICATION -- FROZEN 2026-06-27 (pre-OOS) ===
+## === FINAL STRATEGY SPECIFICATION -- FROZEN 2026-06-28 (pre-OOS) ===
 
 Locked BEFORE looking at the 2019-2024 holdout. No further IS tuning.
 
@@ -426,7 +426,7 @@ capacity grids, and the cap are sensitivities on the fixed candidate, not separa
 
 ---
 
-## 2026-06-27 - ONE-SHOT OOS RESULT (2019-2024) -- frozen candidate
+## 2026-06-28 - ONE-SHOT OOS RESULT (2019-2024) -- frozen candidate
 
 |            | gross Sh | net@2 | net@5 | net@7 | ann@7 | maxDD  | breakeven | turn |
 |------------|----------|-------|-------|-------|-------|--------|-----------|------|
@@ -455,16 +455,16 @@ frozen spec, and a true one-shot holdout. Files: reports/oos_summary.txt, report
 
 | Date | Signal / variant | Params | IS Sharpe | OOS Sharpe | Notes |
 |------|------------------|--------|-----------|------------|-------|
-| 2026-06-27 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
-| 2026-06-27 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
-| 2026-06-27 | sector-residual 5d reversal (LOO) | 2-digit SIC, eligible peers ≥5, point-in-time | 1.22 gross / -0.33 net | sealed | **breakeven 5.5bps**; gross maxDD -8.2%; turnover pinned 0.64 |
-| 2026-06-27 | sector-resid + EWMA smooth hl=5 | turnover control | 0.90 gross / **+0.34 net** | sealed | **breakeven 11.3bps**; turnover 0.64→0.23; FIRST net-positive (IS, tuned) |
+| 2026-06-28 | raw 5d reversal, $-neutral | lb=5, winsor +/-20%, prior-close $5, 7bps | 0.67 gross / -0.39 net | sealed | turnover 0.63/day; **breakeven 4.4bps**; dies on costs |
+| 2026-06-28 | market-residual 5d reversal | + 60d rolling beta vs EW eligible-universe market | 1.00 gross / -0.39 net | sealed | vol→8.0%; **breakeven 5.1bps**; closer, still dies at 7bps |
+| 2026-06-28 | sector-residual 5d reversal (LOO) | 2-digit SIC, eligible peers ≥5, point-in-time | 1.22 gross / -0.33 net | sealed | **breakeven 5.5bps**; gross maxDD -8.2%; turnover pinned 0.64 |
+| 2026-06-28 | sector-resid + EWMA smooth hl=5 | turnover control | 0.90 gross / **+0.34 net** | sealed | **breakeven 11.3bps**; turnover 0.64→0.23; FIRST net-positive (IS, tuned) |
 
 ---
 
 # PHASE 2 — Conditioning reversal on information proxies
 
-## 2026-07-01 - Phase 2 pre-registration (written BEFORE any Phase 2 result)
+## 2026-07-02 - Phase 2 pre-registration (written BEFORE any Phase 2 result)
 
 **Phase 1 is frozen.** Its answer stands: classic residual reversal decayed below realistic costs.
 Phase 2 is a new iteration motivated by course-mentor feedback (add layers: volume/news interaction,
@@ -504,7 +504,7 @@ liquidity-provision interpretation.)
 |------|-----------------|--------|-----------|-------|
 | | | | | |
 
-## 2026-07-01 - Pre-registration amendment: fresh holdout NOT yet available
+## 2026-07-02 - Pre-registration amendment: fresh holdout NOT yet available
 
 The 2025+ holdout pull returned data only through **2024-12-31** (CRSP on WRDS is on its
 annual/lagged update cycle; 2025 vintages not yet posted). The p2holdout files were verified to be a
@@ -516,7 +516,7 @@ strict subset of the existing 2000-2024 pull and deleted. Status:
 - Action item: re-run the holdout pull when CRSP posts 2025 data; seal it before any final
   Phase 2 evaluation.
 
-## 2026-07-01 - Layer A Step 1 result: hypothesis NOT supported (IS 2000-2018)
+## 2026-07-02 - Layer A Step 1 result: hypothesis NOT supported (IS 2000-2018)
 
 Reversal by abnormal-volume (AV) tercile, sector-residual 5d signal, ~878 valid names/day:
 
@@ -552,9 +552,9 @@ candidate strategy configurations enter the DSR trial count.
 
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
-| 2026-07-01 | A: AV terciles (diagnostic) | AV=5d/60d $vol, terciles | high-AV IC(1d) 0.0130 > low 0.0074; 5d flat | hypothesis rejected; no variant built |
+| 2026-07-02 | A: AV terciles (diagnostic) | AV=5d/60d $vol, terciles | high-AV IC(1d) 0.0130 > low 0.0074; 5d flat | hypothesis rejected; no variant built |
 
-## 2026-07-01 - Layer B pre-registration: earnings exclusion (written BEFORE any earnings data pulled)
+## 2026-07-02 - Layer B pre-registration: earnings exclusion (written BEFORE any earnings data pulled)
 
 **Motivation (sharpened by Layer A):** volume failed to isolate information events in large caps,
 so target identifiable information events directly. Earnings-announcement moves are information-
@@ -587,7 +587,7 @@ announcements (the move can land the NEXT trading day). v1 uses the rdq trading 
 variant flagging rdq..rdq+1 is pre-registered HERE (config `signals.earnings.extend: 1`) and may be
 run later without constituting a post-hoc change.
 
-## 2026-07-01 - Layer B Step 1 result: hypothesis SUPPORTED (IS 2000-2018)
+## 2026-07-02 - Layer B Step 1 result: hypothesis SUPPORTED (IS 2000-2018)
 
 Coverage healthy: flagged share ~7.4-7.9% of eligible name-days every year 2000-2018 (close to the
 ~8% expected from 4 announcements x 5d windows / 252d) -> conclusions not driven by coverage gaps.
@@ -610,7 +610,7 @@ Implementation note: our vectorized engine rebuilds targets daily, so "ineligibl
 hold-but-don't-add variant is a possible refinement, not built in v1. The exclusion strategy is a
 CANDIDATE configuration -> counts in the Phase 2 DSR trial ledger.
 
-## 2026-07-01 - Layer B Step 2 result: exclusion improves the candidate, modestly (IS 2000-2018)
+## 2026-07-02 - Layer B Step 2 result: exclusion improves the candidate, modestly (IS 2000-2018)
 
 | candidate            | gross Sh | gross ann | turnover | breakeven | net@2 | net@5 | net@7 |
 |----------------------|----------|-----------|----------|-----------|-------|-------|-------|
@@ -636,10 +636,10 @@ candidate; diagnostics excluded from count.)
 
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
-| 2026-07-01 | B: earnings-in-window flag (diagnostic) | rdq PIT-linked, 5d window | flagged IC(1d) -0.0105 vs clean +0.0125 | gate PASSED |
-| 2026-07-01 | B: earnings-excluded candidate | baseline + flag-ineligible | gross 1.03 / net@7 0.39 | CANDIDATE #1; breakeven flat |
+| 2026-07-02 | B: earnings-in-window flag (diagnostic) | rdq PIT-linked, 5d window | flagged IC(1d) -0.0105 vs clean +0.0125 | gate PASSED |
+| 2026-07-02 | B: earnings-excluded candidate | baseline + flag-ineligible | gross 1.03 / net@7 0.39 | CANDIDATE #1; breakeven flat |
 
-## 2026-07-01 - Layer C pre-registration: PCA/latent-factor residualization (spec before code)
+## 2026-07-02 - Layer C pre-registration: PCA/latent-factor residualization (spec before code)
 
 **Hypothesis:** statistical factors estimated from the return panel capture co-movement beyond
 market + 2-digit sector (styles, hidden clusters), producing a cleaner idiosyncratic residual and
@@ -684,7 +684,7 @@ DSR candidate ledger additions when run: #2 PCA(k=15) candidate; (#3 final combi
    forming the N x N correlation matrix -- cheaper and numerically more stable; right singular
    vectors = correlation eigenvectors.
 
-## 2026-07-01 - Layer C result: PCA(k=15) beats sector-LOO on the pre-registered metric (IS, common dates)
+## 2026-07-02 - Layer C result: PCA(k=15) beats sector-LOO on the pre-registered metric (IS, common dates)
 
 Diagnostics healthy: 288 estimations, ~963 names/window, 99.8% avg coverage, var explained (k=15)
 avg 51.5% (inside the expected 50-60%). Common window 2000-12-29..2018 (PCA warmup excludes most of
@@ -711,10 +711,10 @@ DSR candidate ledger: #2 PCA(k=15) candidate. Next: #3 final combined (PCA + ear
 
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
-| 2026-07-01 | C: PCA k=15 candidate | 252d, re-est 21d, corr-SVD | gross 1.22 / net@7 0.26 (common dates) | CANDIDATE #2; beats sector-LOO 0.14 |
-| 2026-07-01 | C: PCA k=5 / k=30 | sensitivity only | net@7 0.13 / 0.23 | no selection from these |
+| 2026-07-02 | C: PCA k=15 candidate | 252d, re-est 21d, corr-SVD | gross 1.22 / net@7 0.26 (common dates) | CANDIDATE #2; beats sector-LOO 0.14 |
+| 2026-07-02 | C: PCA k=5 / k=30 | sensitivity only | net@7 0.13 / 0.23 | no selection from these |
 
-## 2026-07-01 - Phase 2 final combined candidate (IS, common dates 2000-12-29..2018)
+## 2026-07-03 - Phase 2 final combined candidate (IS, common dates 2000-12-29..2018)
 
 | candidate                    | gross Sh | ann  | turnover | breakeven | net@2 | net@5 | net@7 |
 |------------------------------|----------|------|----------|-----------|-------|-------|-------|
@@ -741,9 +741,9 @@ Sharpe over 3 candidates, fresh 2025+ holdout when CRSP posts it, memo/README Ph
 
 | Date | Layer / variant | Params | IS result | Notes |
 |------|-----------------|--------|-----------|-------|
-| 2026-07-01 | FINAL: PCA k=15 + earn-excl | combined | gross 1.37 / net@7 0.28 (common dates) | CANDIDATE #3 |
+| 2026-07-03 | FINAL: PCA k=15 + earn-excl | combined | gross 1.37 / net@7 0.28 (common dates) | CANDIDATE #3 |
 
-## 2026-07-01 - Phase 2 endgame: spent-holdout sanity check + deflated Sharpe
+## 2026-07-03 - Phase 2 endgame: spent-holdout sanity check + deflated Sharpe
 
 FINAL candidate (PCA k=15 + earnings exclusion):
 
